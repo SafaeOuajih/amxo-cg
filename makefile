@@ -25,7 +25,7 @@ CFLAGS += -Werror -Wall -Wextra \
           -Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
           -Wredundant-decls -Wnested-externs -Wmissing-include-dirs \
 		  -Wno-format-nonliteral \
-          --std=c18 -g3 -Wmissing-declarations $(addprefix -I ,$(INCDIRS)) \
+          --std=c11 -g3 -Wmissing-declarations $(addprefix -I ,$(INCDIRS)) \
 		  -pthread 
 LDFLAGS += -lamxc -lamxd -lamxo
 
