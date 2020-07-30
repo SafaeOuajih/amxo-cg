@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release 0.0.5 - 2020-07-29(10:40:36 +0000)
+
+### Changes
+
+- Adds RAW_VERSION to makefile.inc, VERSION must be X.Y.Z or X.Y.Z-HASH
+
+### Fixes
+
+- Compilation issue with frotified musl
+
 ## Release 0.0.4 - 2020-07-06(08:46:01 +0000)
 
 ### Changes

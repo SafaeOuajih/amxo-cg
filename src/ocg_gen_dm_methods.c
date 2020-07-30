@@ -114,6 +114,9 @@ static void ocg_gen_dm_methods_start(amxo_parser_t *parser) {
                                                  "dm_methods",
                                                  AMXC_VAR_FLAG_DEFAULT);
     const char *file_name = amxc_var_constcast(cstring_t, var_file_name);
+    if(file_name == NULL) {
+        return;
+    }
     fprintf(stdout, "Creating file %s\n", file_name);
     fflush(stdout);
     output = fopen(file_name, "w+");
