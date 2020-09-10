@@ -338,6 +338,7 @@ static void log_add_func_arg(amxo_parser_t *parser,
 }
 
 static amxo_hooks_t logger_hooks = {
+    .it = { .next = NULL, .prev = NULL, .llist = NULL },
     .start = log_start,
     .end = log_end,
     .start_include = log_start_include,
@@ -353,8 +354,8 @@ static amxo_hooks_t logger_hooks = {
     .set_param = log_set_param,
     .end_param = log_end_param,
     .add_func = log_add_func,
+    .add_func_arg = log_add_func_arg,
     .end_func = log_end_func,
-    .add_func_arg = log_add_func_arg
 };
 
 void ocg_verbose_logging(amxo_parser_t *parser, bool enable) {

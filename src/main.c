@@ -73,7 +73,24 @@
 #include "utils.h"
 
 static amxo_hooks_t ocg_hooks = {
+    .it = { .next = NULL, .prev = NULL, .llist = NULL },
+    .start = NULL,
+    .end = NULL,
+    .start_include = NULL,
+    .end_include = NULL,
+    .set_config = NULL,
+    .start_section = NULL,
     .end_section = ocg_config_changed,
+    .create_object = NULL,
+    .add_instance = NULL,
+    .select_object = NULL,
+    .end_object = NULL,
+    .add_param = NULL,
+    .set_param = NULL,
+    .end_param = NULL,
+    .add_func = NULL,
+    .add_func_arg = NULL,
+    .end_func = NULL,
 };
 
 void ocg_dump_config(amxo_parser_t *parser) {

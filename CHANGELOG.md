@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v0.1.1 - 2020-09-04(16:52:04 +0000)
+
+### Fixes
+
+- Fixes g++ warnings and errors
+
+## Release 0.1.0 - 2020-08-30(09:19:44 +0000)
+
+### Changes
+
+- Apply API changes of libamxd
+- Needs libamxd version 1.0.0 or higher
+- Common macros moved to libamxc
+
 ## Release 0.0.5 - 2020-07-29(10:40:36 +0000)
 
 ### Changes

@@ -22,11 +22,17 @@ OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
 # compilation and linking flags
 CFLAGS += -Werror -Wall -Wextra \
           -Wformat=2 -Wno-unused-parameter -Wshadow \
-          -Wwrite-strings -Wstrict-prototypes -Wold-style-definition \
-          -Wredundant-decls -Wnested-externs -Wmissing-include-dirs \
+          -Wwrite-strings -Wredundant-decls -Wmissing-include-dirs \
 		  -Wno-format-nonliteral  -Wno-format-nonliteral \
-          --std=c11 -g3 -Wmissing-declarations $(addprefix -I ,$(INCDIRS)) \
+          -g3 -Wmissing-declarations $(addprefix -I ,$(INCDIRS)) \
 		  -pthread 
+
+ifeq ($(CC_NAME),g++)
+    CFLAGS += -std=c++2a
+else
+	CFLAGS += -Wstrict-prototypes -Wold-style-definition -Wnested-externs -std=c11
+endif
+
 LDFLAGS += -lamxc -lamxd -lamxo
 
 # helper functions - used in multiple targets

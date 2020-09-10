@@ -85,8 +85,7 @@ static const char *file_header =
     "#include <amxp/amxp_signal.h>\n"
     "#include <amxd/amxd_dm.h>\n"
     "#include <amxd/amxd_object.h>\n"
-    "\n"
-    "#define GET_ARG(a,n) amxc_var_get_key(a, n, AMXC_VAR_FLAG_DEFAULT)";
+    "\n";
 
 static const char *func_start =
     "amxd_status_t _%s_%s(amxd_object_t *object,\n"
@@ -187,7 +186,7 @@ static void ocg_gen_dm_methods_func_arg(amxo_parser_t *parser,
                                         amxc_var_t *def_value) {
     const char *type_name = amxc_var_get_type_name_from_id(type);
     const char *ctype_name = NULL;
-    bool is_strict = ((attr_bitmask & amxd_bit_map(amxd_aattr_strict)) != 0);
+    bool is_strict = IS_BIT_SET(attr_bitmask, amxd_aattr_strict);
     bool is_complex_type = false;
     if(output == NULL) {
         return;
@@ -221,11 +220,24 @@ static void ocg_gen_dm_methods_func_arg(amxo_parser_t *parser,
 }
 
 static amxo_hooks_t fgen_hooks = {
+    .it = { .next = NULL, .prev = NULL, .llist = NULL },
     .start = ocg_gen_dm_methods_start,
     .end = ocg_gen_dm_methods_stop,
+    .start_include = NULL,
+    .end_include = NULL,
+    .set_config = NULL,
+    .start_section = NULL,
+    .end_section = ocg_config_changed,
+    .create_object = NULL,
+    .add_instance = NULL,
+    .select_object = NULL,
+    .end_object = NULL,
+    .add_param = NULL,
+    .set_param = NULL,
+    .end_param = NULL,
     .add_func = ocg_gen_dm_methods_add_func,
+    .add_func_arg = ocg_gen_dm_methods_func_arg,
     .end_func = ocg_gen_dm_methods_end_func,
-    .add_func_arg = ocg_gen_dm_methods_func_arg
 };
 
 void ocg_gen_dm_methods(amxo_parser_t *parser, bool enable) {
