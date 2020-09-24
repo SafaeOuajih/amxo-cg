@@ -86,6 +86,6 @@ install: $(TARGET_NAME)
 	$(call install_to,$(DEST)) 
 
 clean:
-	rm -rf ./output/ $(TARGET_NAME)
+	rm -rf ./output/ $(TARGET_NAME) include_priv/version.h
 
 .PHONY: clean changelog
