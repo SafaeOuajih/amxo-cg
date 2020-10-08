@@ -74,9 +74,9 @@
 #include "colors.h"
 #include "version.h"
 
-static FILE *output = NULL;
+static FILE* output = NULL;
 
-static const char *file_header =
+static const char* file_header =
     ""
     "#include <stdlib.h>\n"
     "#include <stdio.h>\n"
@@ -87,7 +87,7 @@ static const char *file_header =
     "#include <amxd/amxd_object.h>\n"
     "\n";
 
-static const char *func_start =
+static const char* func_start =
     "amxd_status_t _%s_%s(amxd_object_t *object,\n"
     "                     amxd_function_t *func,\n"
     "                     amxc_var_t *args,\n"
@@ -96,23 +96,23 @@ static const char *func_start =
     "    %s retval;\n"
     "    \n";
 
-static const char *get_strict_arg =
+static const char* get_strict_arg =
     "    const %s %s = amxc_var_constcast(%s, GET_ARG(args, \"%s\"));\n";
 
-static const char *get_complex_arg =
+static const char* get_complex_arg =
     "    amxc_var_t *%s = GET_ARG(args, \"%s\");\n";
 
-static const char *get_arg =
+static const char* get_arg =
     "    %s %s = amxc_var_dyncast(%s, GET_ARG(args, \"%s\"));\n";
 
 static amxc_string_t end_func;
 
-static void ocg_gen_dm_methods_start(amxo_parser_t *parser) {
-    amxc_var_t *gens = amxo_parser_get_config(parser, "generators");
-    amxc_var_t *var_file_name = amxc_var_get_key(gens,
+static void ocg_gen_dm_methods_start(amxo_parser_t* parser) {
+    amxc_var_t* gens = amxo_parser_get_config(parser, "generators");
+    amxc_var_t* var_file_name = amxc_var_get_key(gens,
                                                  "dm_methods",
                                                  AMXC_VAR_FLAG_DEFAULT);
-    const char *file_name = amxc_var_constcast(cstring_t, var_file_name);
+    const char* file_name = amxc_var_constcast(cstring_t, var_file_name);
     if(file_name == NULL) {
         return;
     }
@@ -131,19 +131,19 @@ static void ocg_gen_dm_methods_start(amxo_parser_t *parser) {
     }
 }
 
-static void ocg_gen_dm_methods_stop(amxo_parser_t *parser) {
+static void ocg_gen_dm_methods_stop(amxo_parser_t* parser) {
     if(output != NULL) {
         fclose(output);
     }
 }
 
-static void ocg_gen_dm_methods_add_func(amxo_parser_t *parser,
-                                        amxd_object_t *object,
-                                        const char *name,
+static void ocg_gen_dm_methods_add_func(amxo_parser_t* parser,
+                                        amxd_object_t* object,
+                                        const char* name,
                                         int64_t attr_bitmask,
                                         uint32_t type) {
-    const char *obj_name = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
-    const char *type_name = amxc_var_get_type_name_from_id(type);
+    const char* obj_name = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    const char* type_name = amxc_var_get_type_name_from_id(type);
     if(output == NULL) {
         return;
     }
@@ -157,11 +157,11 @@ static void ocg_gen_dm_methods_add_func(amxo_parser_t *parser,
     fprintf(output, func_start, obj_name, name, type_name);
 }
 
-static void ocg_gen_dm_methods_end_func(amxo_parser_t *parser,
-                                        amxd_object_t *object,
-                                        amxd_function_t *function) {
+static void ocg_gen_dm_methods_end_func(amxo_parser_t* parser,
+                                        amxd_object_t* object,
+                                        amxd_function_t* function) {
     uint32_t type = amxd_function_get_type(function);
-    const char *type_name = amxc_var_get_type_name_from_id(type);
+    const char* type_name = amxc_var_get_type_name_from_id(type);
     if(output == NULL) {
         return;
     }
@@ -177,15 +177,15 @@ static void ocg_gen_dm_methods_end_func(amxo_parser_t *parser,
     amxc_string_clean(&end_func);
 }
 
-static void ocg_gen_dm_methods_func_arg(amxo_parser_t *parser,
-                                        amxd_object_t *object,
-                                        amxd_function_t *func,
-                                        const char *name,
+static void ocg_gen_dm_methods_func_arg(amxo_parser_t* parser,
+                                        amxd_object_t* object,
+                                        amxd_function_t* func,
+                                        const char* name,
                                         int64_t attr_bitmask,
                                         uint32_t type,
-                                        amxc_var_t *def_value) {
-    const char *type_name = amxc_var_get_type_name_from_id(type);
-    const char *ctype_name = NULL;
+                                        amxc_var_t* def_value) {
+    const char* type_name = amxc_var_get_type_name_from_id(type);
+    const char* ctype_name = NULL;
     bool is_strict = IS_BIT_SET(attr_bitmask, amxd_aattr_strict);
     bool is_complex_type = false;
     if(output == NULL) {
@@ -240,6 +240,6 @@ static amxo_hooks_t fgen_hooks = {
     .end_func = ocg_gen_dm_methods_end_func,
 };
 
-void ocg_gen_dm_methods(amxo_parser_t *parser, bool enable) {
+void ocg_gen_dm_methods(amxo_parser_t* parser, bool enable) {
     amxo_parser_set_hooks(parser, &fgen_hooks);
 }

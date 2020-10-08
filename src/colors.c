@@ -66,7 +66,7 @@
 #include "colors.h"
 #include "utils.h"
 
-static const char *colors[] = {
+static const char* colors[] = {
     COLOR_BRIGHT_BLUE,
     COLOR_BRIGHT_GREEN,
     COLOR_BRIGHT_RED,
@@ -90,7 +90,7 @@ void enable_colors(bool enable) {
     }
 }
 
-const char *get_color(uint32_t cc) {
+const char* get_color(uint32_t cc) {
     if(cc < RESET) {
         return colors[cc];
     }

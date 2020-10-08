@@ -70,14 +70,14 @@
 
 #include "utils.h"
 
-typedef void (*ocg_help_fn_t) (void);
+typedef void (* ocg_help_fn_t) (void);
 
 typedef struct _help_topics {
-    const char *topic;
+    const char* topic;
     ocg_help_fn_t fn;
 } help_topics_t;
 
-static void ocg_usage(int argc, char *argv[]) {
+static void ocg_usage(int argc, char* argv[]) {
     printf("%s [OPTIONS] <odl files>\n", argv[0]);
 
     printf("\n");
@@ -115,7 +115,7 @@ static void ocg_usage_gen_dm_methods(void) {
     printf("\t-Gdm_methods,/tmp/my_dm_funcs.c\n\n");
 }
 
-static void ocg_sub_usage(const char *help_topic) {
+static void ocg_sub_usage(const char* help_topic) {
     static help_topics_t topics[] = {
         { "dm_methods", ocg_usage_gen_dm_methods },
         { NULL, NULL }
@@ -128,10 +128,10 @@ static void ocg_sub_usage(const char *help_topic) {
     }
 }
 
-static int add_generator(amxc_var_t *generators, char *generator) {
+static int add_generator(amxc_var_t* generators, char* generator) {
     int retval = 1;
     int i = 0;
-    static const char *valids[] = {
+    static const char* valids[] = {
         "dm_methods",
         NULL
     };
@@ -168,21 +168,21 @@ exit:
     return retval;
 }
 
-static void ocg_generators(amxo_parser_t *parser) {
-    const amxc_htable_t *gens
+static void ocg_generators(amxo_parser_t* parser) {
+    const amxc_htable_t* gens
         = amxc_var_constcast(amxc_htable_t,
                              amxo_parser_get_config(parser, "generators"));
     ocg_gen_dm_methods(parser, amxc_htable_contains(gens, "dm_methods"));
 }
 
-int ocg_parse_arguments(amxo_parser_t *parser,
-                        amxc_var_t *config,
+int ocg_parse_arguments(amxo_parser_t* parser,
+                        amxc_var_t* config,
                         int argc,
-                        char **argv) {
+                        char** argv) {
     int c;
-    amxc_var_t *incdirs = NULL;
-    amxc_var_t *libdirs = NULL;
-    amxc_var_t *generators = NULL;
+    amxc_var_t* incdirs = NULL;
+    amxc_var_t* libdirs = NULL;
+    amxc_var_t* generators = NULL;
     amxc_var_set_type(config, AMXC_VAR_ID_HTABLE);
 
     while(1) {
@@ -274,7 +274,7 @@ int ocg_parse_arguments(amxo_parser_t *parser,
     return optind;
 }
 
-void ocg_config_changed(amxo_parser_t *parser, int section_id) {
+void ocg_config_changed(amxo_parser_t* parser, int section_id) {
     bool verbose = amxc_var_dyncast(bool,
                                     amxo_parser_get_config(parser, "verbose"));
 
@@ -286,14 +286,14 @@ void ocg_config_changed(amxo_parser_t *parser, int section_id) {
     ocg_generators(parser);
 }
 
-int ocg_apply_config(amxo_parser_t *parser,
-                     amxc_var_t *config) {
+int ocg_apply_config(amxo_parser_t* parser,
+                     amxc_var_t* config) {
     int retval = 0;
-    const amxc_htable_t *options = amxc_var_constcast(amxc_htable_t, config);
+    const amxc_htable_t* options = amxc_var_constcast(amxc_htable_t, config);
 
     amxc_htable_for_each(it, options) {
-        amxc_var_t *option = amxc_var_from_htable_it(it);
-        const char *key = amxc_htable_it_get_key(it);
+        amxc_var_t* option = amxc_var_from_htable_it(it);
+        const char* key = amxc_htable_it_get_key(it);
         retval = amxo_parser_set_config(parser, key, option);
         if(retval != 0) {
             goto exit;

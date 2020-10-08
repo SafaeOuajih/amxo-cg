@@ -72,21 +72,21 @@ extern "C"
 #include <amxd/amxd_dm.h>
 #include <amxo/amxo.h>
 
-int ocg_parse_arguments(amxo_parser_t *parser,
-                        amxc_var_t *config,
+int ocg_parse_arguments(amxo_parser_t* parser,
+                        amxc_var_t* config,
                         int argc,
-                        char **argv);
+                        char** argv);
 
-void ocg_config_changed(amxo_parser_t *parser, int section_id);
+void ocg_config_changed(amxo_parser_t* parser, int section_id);
 
-int ocg_apply_config(amxo_parser_t *parser,
-                     amxc_var_t *config);
+int ocg_apply_config(amxo_parser_t* parser,
+                     amxc_var_t* config);
 
-void ocg_dump_config(amxo_parser_t *parser);
+void ocg_dump_config(amxo_parser_t* parser);
 
-void ocg_verbose_logging(amxo_parser_t *parser, bool enable);
+void ocg_verbose_logging(amxo_parser_t* parser, bool enable);
 
-void ocg_gen_dm_methods(amxo_parser_t *parser, bool enable);
+void ocg_gen_dm_methods(amxo_parser_t* parser, bool enable);
 
 #ifdef __cplusplus
 }

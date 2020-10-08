@@ -93,13 +93,13 @@ static amxo_hooks_t ocg_hooks = {
     .end_func = NULL,
 };
 
-void ocg_dump_config(amxo_parser_t *parser) {
+void ocg_dump_config(amxo_parser_t* parser) {
     fprintf(stderr, "Current parser configuration:\n");
     fflush(stderr);
     amxc_var_dump(&parser->config, STDERR_FILENO);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     int retval = 0;
     int index = 0;
     amxd_dm_t dm;

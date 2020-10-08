@@ -97,7 +97,7 @@ extern "C"
 #define c(x) get_color(x)
 
 void enable_colors(bool enable);
-const char *get_color(uint32_t cc);
+const char* get_color(uint32_t cc);
 
 #ifdef __cplusplus
 }
