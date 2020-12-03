@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release 0.2.2 - 2020-11-29(18:54:14 +0000)
+
+### Changes
+
+- Update readme
+
+### Fixes
+
+- Fix debian package dependencies
+
+## Release 0.2.1 - 2020-11-16(14:29:52 +0000)
+
+### Changes
+
+- Update gitlab CI/CD yml file
+
 ## Release 0.2.0 - 2020-10-02(17:14:55 +0000)
 
 ### Changes

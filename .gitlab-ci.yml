@@ -1,0 +1,7 @@
+variables:
+  BUILD_DEPS: libamxd libamxo libamxc
+  BUILD_TARGET: amxo-cg
+
+include:
+  - remote: 'https://gitlab.com/soft.at.home/ci/gitlab-ci/raw/master/ambiorix-default-pipeline.yml'
+
