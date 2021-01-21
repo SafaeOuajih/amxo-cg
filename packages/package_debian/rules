@@ -7,7 +7,7 @@ VERSION ?= $(subst $(VERSION_PREFIX)v,,$(strip $(shell git describe --tags)))
 VERSION_PARTS = $(subst ., ,$(VERSION))
 VMAJOR = $(word 1,$(VERSION_PARTS))
 VMINOR = $(word 2,$(VERSION_PARTS))
-VBUiLD_FULL = $(word 3,$(VERSION_PARTS))
+VBUILD_FULL = $(word 3,$(VERSION_PARTS))
 VBUILD = $(word 1,$(subst -, ,$(VBUILD_FULL)))
 
 build:

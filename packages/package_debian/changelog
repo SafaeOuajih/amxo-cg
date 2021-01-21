@@ -1,3 +1,9 @@
+amxo-cg (0.2.4) unstable; urgency=medium
+
+  * Auto generate make files using build agnostic file (baf)
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Tue, 19 Jan 2021 08:26:47 +0000
+
 amxo-cg (0.2.3) unstable; urgency=medium
 
   * Add contributing.md

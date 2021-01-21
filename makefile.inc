@@ -2,7 +2,6 @@
 EXECUTABLES = install strip ln tar $(CC) $(AR) fakeroot mkdir git echo cat
 K := $(foreach exec,$(EXECUTABLES),\
         $(if $(shell which $(exec)),some string,$(error "No $(exec) in PATH")))
-T = $(shell git fetch --tags)
 
 # tools used
 INSTALL = $(shell which install)
@@ -24,16 +23,19 @@ VMINOR = $(word 2,$(VERSION_PARTS))
 VBUILD_FULL = $(word 3,$(VERSION_PARTS))
 VBUILD = $(word 1,$(subst -, ,$(VBUILD_FULL)))
 
-# the processor architecture 
-MACHINE = $(shell $(CC) -dumpmachine)
+# the processor architecture
+MACHINE ?= $(shell $(CC) -dumpmachine)
 CC_PARTS = $(subst -, ,$(CC))
 CC_NAME = $(word $(words $(CC_PARTS)),$(CC_PARTS))
 
 # Target
-TARGET_NAME = amxo-cg
+COMPONENT = amxo-cg
 
 # install directories
-PREFIX = /usr/
-INSTALL_INC_DIR = include/$(TARGET_NAME)
-INSTALL_LIB_DIR ?= lib/$(MACHINE)
-INSTALL_BIN_DIR ?= bin
+PREFIX ?= /usr/
+LIBDIR ?= $(PREFIX)lib/$(MACHINE)
+BINDIR ?= $(PREFIX)bin
+INCLUDEDIR ?= $(PREFIX)include
+INITDIR ?= /etc/init.d
+DOCDIR ?= $(PREFIX)share/doc/amxo-cg
+PROCMONDIR ?= $(PREFIX)lib/processmonitor/scripts

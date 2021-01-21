@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release 0.2.4 - 2021-01-19(08:26:39 +0000)
+
+### New
+
+- Auto generate make files using build agnostic file (baf)
+
 ## Release 0.2.3 - 2021-01-05(09:46:08 +0000)
 
 ### New 
