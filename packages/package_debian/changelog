@@ -1,3 +1,9 @@
+amxo-cg (0.2.5) unstable; urgency=medium
+
+  * Migrate to new licenses format (baf)
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Fri, 26 Feb 2021 18:06:28 +0000
+
 amxo-cg (0.2.4) unstable; urgency=medium
 
   * Auto generate make files using build agnostic file (baf)

@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release 0.2.5 - 2021-02-26(18:06:18 +0000)
+
+### Changes
+
+- Migrate to new licenses format (baf)
+
 ## Release 0.2.4 - 2021-01-19(08:26:39 +0000)
 
 ### New
