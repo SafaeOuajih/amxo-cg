@@ -1,3 +1,15 @@
+amxo-cg (1.0.2) unstable; urgency=medium
+
+  *  remove fakeroot dependency on host to build WRT image 
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Thu, 15 Apr 2021 20:18:29 +0000
+
+amxo-cg (1.0.1) unstable; urgency=medium
+
+  * VERSION_PREFIX is needed in buildfiles 
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Thu, 15 Apr 2021 11:08:40 +0000
+
 amxo-cg (1.0.0) unstable; urgency=medium
 
 

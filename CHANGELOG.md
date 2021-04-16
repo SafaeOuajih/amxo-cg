@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release 1.0.2 - 2021-04-15(20:18:29 +0000)
+
+### Changes
+
+-  remove fakeroot dependency on host to build WRT image 
+
+## Release 1.0.1 - 2021-04-15(11:08:39 +0000)
+
+### Fixes
+
+- VERSION_PREFIX is needed in buildfiles 
+
 ## Release 1.0.0 - 2021-04-08(22:08:56 +0000)
 
 ### Changes
