@@ -19,7 +19,7 @@ OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
 # compilation and linking flags
 CFLAGS += -Werror -Wall -Wextra \
           -Wformat=2 -Wno-unused-parameter -Wshadow \
-          -Wwrite-strings -Wredundant-decls -Wmissing-include-dirs \
+          -Wwrite-strings -Wredundant-decls \
 		  -Wno-format-nonliteral  -Wno-format-nonliteral \
           -g3 -Wmissing-declarations $(addprefix -I ,$(INCDIRS)) \
 		  -pthread 
