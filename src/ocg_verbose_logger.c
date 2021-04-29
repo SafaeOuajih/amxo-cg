@@ -116,7 +116,6 @@ static void log_end_include(amxo_parser_t* parser, const char* incfile) {
            c(WHITE), c(RESET),
            c(GREEN), incfile, c(RESET),
            file, line);
-    ocg_dump_config(parser);
 }
 
 
@@ -160,9 +159,6 @@ static void log_end_section(amxo_parser_t* parser,
            c(WHITE), c(RESET),
            c(GREEN), section_name, c(RESET),
            file, line);
-    if(section_id == 0) {
-        ocg_dump_config(parser);
-    }
 }
 
 static void log_set_config(amxo_parser_t* parser,

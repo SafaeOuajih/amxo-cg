@@ -290,6 +290,7 @@ int ocg_apply_config(amxo_parser_t* parser,
                      amxc_var_t* config) {
     int retval = 0;
     const amxc_htable_t* options = amxc_var_constcast(amxc_htable_t, config);
+    amxc_var_t* var_resolve = NULL;
 
     amxc_htable_for_each(it, options) {
         amxc_var_t* option = amxc_var_from_htable_it(it);
@@ -299,6 +300,9 @@ int ocg_apply_config(amxo_parser_t* parser,
             goto exit;
         }
     }
+
+    var_resolve = amxo_parser_claim_config(parser, "odl-resolve");
+    amxc_var_set(bool, var_resolve, false);
 
 exit:
     return retval;
