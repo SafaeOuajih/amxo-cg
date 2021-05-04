@@ -23,19 +23,19 @@ amxo-cg (1.0.1) unstable; urgency=medium
 
 amxo-cg (1.0.0) unstable; urgency=medium
 
-
+  * Move copybara to baf
 
  -- Peter DEHERDT <peter.deherdt@softathome.com>  Thu, 08 Apr 2021 22:08:57 +0000
 
 amxo-cg (0.2.5) unstable; urgency=medium
 
-
+  * Migrate to new licenses format (baf)
 
  -- Peter DEHERDT <peter.deherdt@softathome.com>  Fri, 26 Feb 2021 18:06:28 +0000
 
 amxo-cg (0.2.4) unstable; urgency=medium
 
-
+  * Auto generate make files using build agnostic file (baf)
 
  -- Peter DEHERDT <peter.deherdt@softathome.com>  Tue, 19 Jan 2021 08:26:47 +0000
 
@@ -99,7 +99,7 @@ amxo-cg (0.0.4) unstable; urgency=medium
 
 amxo-cg (0.0.3) unstable; urgency=medium
 
-
+  * Add copybara file
   * update license to BSD+patent
 
  -- Peter DEHERDT <peter.deherdt@softathome.com>  Tue, 30 Jun 2020 08:35:09 +0000

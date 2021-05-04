@@ -32,19 +32,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changes
 
-
+- Move copybara to baf
 
 ## Release 0.2.5 - 2021-02-26(18:06:18 +0000)
 
 ### Changes
 
-
+- Migrate to new licenses format (baf)
 
 ## Release 0.2.4 - 2021-01-19(08:26:39 +0000)
 
 ### New
 
-
+- Auto generate make files using build agnostic file (baf)
 
 ## Release 0.2.3 - 2021-01-05(09:46:08 +0000)
 
@@ -114,7 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New
 
-
+- Add copybara file
 
 ### Changes
 
