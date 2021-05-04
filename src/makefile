@@ -13,24 +13,30 @@ INCDIRS = $(INCDIR_PRIV)
 OBJDIR = ../output/$(MACHINE)
 
 # files
-SOURCES = $(wildcard $(SRCDIR)/*.c)
+SOURCES_CG = $(wildcard $(SRCDIR)/*.c)
+SOURCES_XML = $(wildcard $(SRCDIR)/xml/*.c)
+SOURCES_DMM = $(wildcard $(SRCDIR)/dmm/*.c)
+
+SOURCES = $(SOURCES_CG) $(SOURCES_XML) $(SOURCES_DMM)
+
 OBJECTS = $(addprefix $(OBJDIR)/,$(notdir $(SOURCES:.c=.o)))
 		
 # compilation and linking flags
 CFLAGS += -Werror -Wall -Wextra \
-          -Wformat=2 -Wno-unused-parameter -Wshadow \
+          -Wformat=2 -Wshadow \
           -Wwrite-strings -Wredundant-decls \
 		  -Wno-format-nonliteral  -Wno-format-nonliteral \
           -g3 -Wmissing-declarations $(addprefix -I ,$(INCDIRS)) \
-		  -pthread 
+		  -pthread \
+		  $(shell pkg-config --cflags libxml-2.0)
 
 ifeq ($(CC_NAME),g++)
     CFLAGS += -std=c++2a
 else
-	CFLAGS += -Wstrict-prototypes -Wold-style-definition -Wnested-externs -std=c11
+	CFLAGS += -Wstrict-prototypes -Wold-style-definition -Wnested-externs -std=gnu11 
 endif
 
-LDFLAGS += -lamxc -lamxd -lamxo
+LDFLAGS += -lamxc -lamxd -lamxo $(shell pkg-config --libs libxml-2.0)
 
 # targets
 all: ../include_priv/version.h $(COMPONENT)
@@ -44,6 +50,15 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)/
 	$(CC) $(CFLAGS) -c -o $@ $<
 	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
 
+$(OBJDIR)/%.o: $(SRCDIR)/xml/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+$(OBJDIR)/%.o: $(SRCDIR)/dmm/%.c | $(OBJDIR)/
+	$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -MM -MP -MT '$(@) $(@:.o=.d)' -MF $(@:.o=.d) $(<)
+
+
 ../include_priv/version.h : ../include_priv/version.h.m4
 	@echo "Current version = $(VMAJOR).$(VMINOR).$(VBUILD)"
 	m4 -DMAJOR=$(VMAJOR) -DMINOR=$(VMINOR) -DBUILD=$(VBUILD) $(<) > $(@)
@@ -54,4 +69,4 @@ $(OBJDIR)/:
 clean:
 	rm -rf ../output/ $(COMPONENT) include_priv/version.h
 
-.PHONY: clean all
+.PHONY: clean all ../include_priv/version.h

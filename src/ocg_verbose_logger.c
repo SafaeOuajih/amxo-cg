@@ -93,6 +93,7 @@ static void log_start(amxo_parser_t* parser) {
 
 static void log_end(amxo_parser_t* parser) {
     const char* file = amxo_parser_get_file(parser);
+    identation--;
     printf("%sEnd%s - %s\n", c(WHITE), c(RESET), file);
 }
 
@@ -117,7 +118,6 @@ static void log_end_include(amxo_parser_t* parser, const char* incfile) {
            c(GREEN), incfile, c(RESET),
            file, line);
 }
-
 
 static void log_start_section(amxo_parser_t* parser,
                               int section_id) {
@@ -163,7 +163,7 @@ static void log_end_section(amxo_parser_t* parser,
 
 static void log_set_config(amxo_parser_t* parser,
                            const char* option,
-                           amxc_var_t* value) {
+                           UNUSED amxc_var_t* value) {
     const char* file = amxo_parser_get_file(parser);
     uint32_t line = amxo_parser_get_line(parser);
     print_identation();
@@ -174,9 +174,9 @@ static void log_set_config(amxo_parser_t* parser,
 }
 
 static void log_create_object(amxo_parser_t* parser,
-                              amxd_object_t* parent,
+                              UNUSED amxd_object_t* parent,
                               const char* name,
-                              int64_t attr_bitmask,
+                              UNUSED int64_t attr_bitmask,
                               amxd_object_type_t type) {
     const char* file = amxo_parser_get_file(parser);
     uint32_t line = amxo_parser_get_line(parser);
@@ -211,7 +211,7 @@ static void log_create_object(amxo_parser_t* parser,
 }
 
 static void log_add_instance(amxo_parser_t* parser,
-                             amxd_object_t* parent,
+                             UNUSED amxd_object_t* parent,
                              uint32_t index,
                              const char* name) {
     const char* file = amxo_parser_get_file(parser);
@@ -262,9 +262,9 @@ static void log_end_object(amxo_parser_t* parser,
 }
 
 static void log_add_param(amxo_parser_t* parser,
-                          amxd_object_t* object,
+                          UNUSED amxd_object_t* object,
                           const char* name,
-                          int64_t attr_bitmask,
+                          UNUSED int64_t attr_bitmask,
                           uint32_t type) {
     const char* file = amxo_parser_get_file(parser);
     uint32_t line = amxo_parser_get_line(parser);
@@ -277,7 +277,7 @@ static void log_add_param(amxo_parser_t* parser,
 }
 
 static void log_set_param(amxo_parser_t* parser,
-                          amxd_object_t* object,
+                          UNUSED amxd_object_t* object,
                           amxd_param_t* param,
                           amxc_var_t* value) {
     const char* file = amxo_parser_get_file(parser);
@@ -293,15 +293,10 @@ static void log_set_param(amxo_parser_t* parser,
     free(value_str);
 }
 
-static void log_end_param(amxo_parser_t* parser,
-                          amxd_object_t* object,
-                          amxd_param_t* param) {
-}
-
-static void log_add_func(amxo_parser_t* parser,
-                         amxd_object_t* object,
+static void log_add_func(UNUSED amxo_parser_t* parser,
+                         UNUSED amxd_object_t* object,
                          const char* name,
-                         int64_t attr_bitmask,
+                         UNUSED int64_t attr_bitmask,
                          uint32_t type) {
     print_identation();
     printf("%sAdd function%s %s%s%s %s%s%s(",
@@ -311,21 +306,21 @@ static void log_add_func(amxo_parser_t* parser,
 }
 
 static void log_end_func(amxo_parser_t* parser,
-                         amxd_object_t* object,
-                         amxd_function_t* function) {
+                         UNUSED amxd_object_t* object,
+                         UNUSED amxd_function_t* function) {
     const char* file = amxo_parser_get_file(parser);
     uint32_t line = amxo_parser_get_line(parser);
     printf(" ) - %s@%d\n", file, line);
     arg_sep = "";
 }
 
-static void log_add_func_arg(amxo_parser_t* parser,
-                             amxd_object_t* object,
-                             amxd_function_t* func,
+static void log_add_func_arg(UNUSED amxo_parser_t* parser,
+                             UNUSED amxd_object_t* object,
+                             UNUSED amxd_function_t* func,
                              const char* name,
-                             int64_t attr_bitmask,
+                             UNUSED int64_t attr_bitmask,
                              uint32_t type,
-                             amxc_var_t* def_value) {
+                             UNUSED amxc_var_t* def_value) {
     printf("%s %s%s%s %s%s%s",
            arg_sep,
            c(BLUE), amxc_var_get_type_name_from_id(type), c(RESET),
@@ -335,6 +330,7 @@ static void log_add_func_arg(amxo_parser_t* parser,
 
 static amxo_hooks_t logger_hooks = {
     .it = { .next = NULL, .prev = NULL, .llist = NULL },
+    .comment = NULL,
     .start = log_start,
     .end = log_end,
     .start_include = log_start_include,
@@ -348,10 +344,11 @@ static amxo_hooks_t logger_hooks = {
     .end_object = log_end_object,
     .add_param = log_add_param,
     .set_param = log_set_param,
-    .end_param = log_end_param,
+    .end_param = NULL,
     .add_func = log_add_func,
     .add_func_arg = log_add_func_arg,
     .end_func = log_end_func,
+    .add_mib = NULL,
 };
 
 void ocg_verbose_logging(amxo_parser_t* parser, bool enable) {

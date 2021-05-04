@@ -29,6 +29,7 @@ all:
 
 clean:
 	$(MAKE) -C src clean
+	$(MAKE) -C test clean
 
 install: all
 	$(call install_to,$(DEST))
@@ -42,4 +43,8 @@ package: all
 changelog:
 	$(call create_changelog)
 
-.PHONY: all clean changelog install package
+test:
+	$(MAKE) -C test run
+	$(MAKE) -C test coverage
+
+.PHONY: all clean changelog install package test

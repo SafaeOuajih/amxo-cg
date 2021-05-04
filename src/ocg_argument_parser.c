@@ -62,6 +62,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <amxc/amxc.h>
 #include <amxp/amxp_signal.h>
@@ -69,102 +72,91 @@
 #include <amxo/amxo.h>
 
 #include "utils.h"
+#include "colors.h"
 
-typedef void (* ocg_help_fn_t) (void);
+#define COPT_INCDIRS "include-dirs"
+#define COPT_LIBDIRS "import-dirs"
+#define COPT_MIBDIRS "mib-dirs"
+#define COPT_CFG_DIR "cfg-dir"
+#define COPT_PLUGIN_DIR "plugin-dir"
 
-typedef struct _help_topics {
-    const char* topic;
-    ocg_help_fn_t fn;
-} help_topics_t;
+#define CFG_DIR "/etc/amx"
+#define PLUGIN_DIR "/usr/lib/amx"
 
-static void ocg_usage(int argc, char* argv[]) {
-    printf("%s [OPTIONS] <odl files>\n", argv[0]);
+static int check_exists(amxc_var_t* config, const char* path) {
+    struct stat path_stat;
+    int retval = stat(path, &path_stat);
 
-    printf("\n");
-    printf("Options:\n");
-    printf("--------\n");
-    printf("\t-h   --help         Print this help\n");
-    printf("\t-v   --verbose      Print verbose logging\n");
-    printf("\t-I   --include-dir  Adds an include directory\n");
-    printf("\t-L   --import-dir   Adds an import directory\n");
-    printf("\t-G   --generator    Enables a generator (see generators)\n");
-    printf("\n");
-    printf("Generators:\n");
-    printf("-----------\n");
-    printf("\n");
-    printf("\tGenerators can create files during the parsing of the odl file(s).\n\n");
-    printf("\tThis %s supports:\n", argv[0]);
-    printf("\t  - \"dm_methods\" use '--help dm_methods' for more information.\n");
-    printf("\n");
-}
-
-static void ocg_usage_gen_dm_methods(void) {
-    printf("\nData model methods C function template generator\n\n");
-    printf("Option: -Gdm_methods,<output file>\n\n");
-    printf("Description:\n");
-    printf("------------\n\n");
-    printf("\tThis generator generates a file containing with C functions.\n");
-    printf("\tEach function in this file represents a data model object method.\n");
-    printf("\n");
-    printf("Arguments:\n");
-    printf("----------\n");
-    printf("\t<output_file> - mandatory - path (relative or absolute) and file name\n");
-    printf("\n");
-    printf("Example:\n");
-    printf("--------\n");
-    printf("\t-Gdm_methods,/tmp/my_dm_funcs.c\n\n");
-}
-
-static void ocg_sub_usage(const char* help_topic) {
-    static help_topics_t topics[] = {
-        { "dm_methods", ocg_usage_gen_dm_methods },
-        { NULL, NULL }
-    };
-
-    for(int i = 0; topics[i].topic != NULL; i++) {
-        if(strcmp(topics[i].topic, help_topic) == 0) {
-            topics[i].fn();
-        }
+    if(retval != 0) {
+        ocg_error(config, "[%s] - %s", path, strerror(errno));
     }
+
+    return retval;
 }
 
-static int add_generator(amxc_var_t* generators, char* generator) {
+static int add_generator(amxc_var_t* config, char* input) {
     int retval = 1;
     int i = 0;
+    char* generator = strdup(input);
+    char* directory = NULL;
+    amxc_var_t* generators = GET_ARG(config, "generators");
     static const char* valids[] = {
         "dm_methods",
+        "xml",
         NULL
     };
 
+    directory = strchr(generator, ',');
+    if(directory != NULL) {
+        directory[0] = 0;
+        directory++;
+    }
     for(i = 0; valids[i] != NULL; i++) {
-        if(strncmp(generator, valids[i], strlen(valids[i])) == 0) {
+        if(strcmp(generator, valids[i]) == 0) {
             break;
         }
     }
 
     if(valids[i] == NULL) {
-        fprintf(stderr, "Invalid generator [%s]\n", generator);
+        ocg_error(config, "Invalid generator [%s]", generator);
         goto exit;
     }
 
-    if(generator[strlen(valids[i])] != ',') {
-        fprintf(stderr, "Generator missing output file [%s]\n", generator);
-        retval = 2;
-        goto exit;
-    }
-
-    if(amxc_var_add_key(cstring_t,
-                        generators,
-                        valids[i],
-                        generator + strlen(valids[i]) + 1) == NULL) {
-        fprintf(stderr, "Duplicate generator specified [%s]\n", generator);
+    if(GET_ARG(generators, valids[i]) != NULL) {
+        ocg_error(config, "Duplicate generator specified [%s]", generator);
         retval = 3;
         goto exit;
+    }
+
+    if((directory == NULL) || (*directory == 0)) {
+        ocg_warning(config, "Generator [%s] missing output directory", generator);
+        ocg_message(config, "Using current directory", generator);
+    } else {
+        retval = check_exists(config, directory);
+        if(retval != 0) {
+            goto exit;
+        }
+    }
+
+    if((directory == NULL) || (*directory == 0) || (directory[0] != '/')) {
+        char* current_wd = getcwd(NULL, 0);
+        char* real_path = NULL;
+        amxc_string_t file_path;
+        amxc_string_init(&file_path, 0);
+        amxc_string_setf(&file_path, "%s/%s", current_wd, directory == NULL ? "" : directory);
+        real_path = realpath(amxc_string_get(&file_path, 0), NULL);
+        amxc_var_add_key(cstring_t, generators, valids[i], real_path);
+        free(current_wd);
+        free(real_path);
+        amxc_string_clean(&file_path);
+    } else {
+        amxc_var_add_key(cstring_t, generators, valids[i], directory);
     }
 
     retval = 0;
 
 exit:
+    free(generator);
     return retval;
 }
 
@@ -173,9 +165,50 @@ static void ocg_generators(amxo_parser_t* parser) {
         = amxc_var_constcast(amxc_htable_t,
                              amxo_parser_get_config(parser, "generators"));
     ocg_gen_dm_methods(parser, amxc_htable_contains(gens, "dm_methods"));
+    ocg_gen_xml(parser, amxc_htable_contains(gens, "xml"));
 }
 
-int ocg_parse_arguments(amxo_parser_t* parser,
+static void ocg_config_add_dir(amxc_var_t* var_dirs, const char* dir) {
+    bool found = false;
+    const amxc_llist_t* dirs = amxc_var_constcast(amxc_llist_t, var_dirs);
+
+    amxc_llist_for_each(it, dirs) {
+        amxc_var_t* var_dir = amxc_var_from_llist_it(it);
+        const char* stored_dir = amxc_var_constcast(cstring_t, var_dir);
+        if((stored_dir != NULL) && (strcmp(dir, stored_dir) == 0)) {
+            found = true;
+            break;
+        }
+    }
+
+    if(!found) {
+        amxc_var_add(cstring_t, var_dirs, dir);
+    }
+}
+
+static void ocg_config_set_default_dirs(amxo_parser_t* parser) {
+    amxc_var_t* inc_dirs = amxo_parser_claim_config(parser, COPT_INCDIRS);
+    amxc_var_t* lib_dirs = amxo_parser_claim_config(parser, COPT_LIBDIRS);
+    amxc_var_t* mib_dirs = amxo_parser_claim_config(parser, COPT_MIBDIRS);
+    amxc_var_t* cfg_dir = amxo_parser_claim_config(parser, COPT_CFG_DIR);
+    amxc_var_t* plugin_dir = amxo_parser_claim_config(parser, COPT_PLUGIN_DIR);
+
+    amxc_var_set(cstring_t, cfg_dir, CFG_DIR);
+    amxc_var_set(cstring_t, plugin_dir, PLUGIN_DIR);
+
+    ocg_config_add_dir(inc_dirs, ".");
+    ocg_config_add_dir(inc_dirs, "${prefix}${cfg-dir}/${name}");
+    ocg_config_add_dir(inc_dirs, "${prefix}${cfg-dir}/modules");
+
+    ocg_config_add_dir(lib_dirs, "${prefix}${plugin-dir}/${name}");
+    ocg_config_add_dir(lib_dirs, "${prefix}${plugin-dir}/modules");
+    ocg_config_add_dir(lib_dirs, "${prefix}/usr/local/lib/amx/${name}");
+    ocg_config_add_dir(lib_dirs, "${prefix}/usr/local/lib/amx/modules");
+
+    ocg_config_add_dir(mib_dirs, "${prefix}${cfg-dir}/${name}/mibs");
+}
+
+int ocg_parse_arguments(UNUSED amxo_parser_t* parser,
                         amxc_var_t* config,
                         int argc,
                         char** argv) {
@@ -193,24 +226,22 @@ int ocg_parse_arguments(amxo_parser_t* parser,
             {"verbose", no_argument, 0, 'v' },
             {"include-dir", required_argument, 0, 'I' },
             {"import-dir", required_argument, 0, 'L' },
+            {"import-resolve", no_argument, 0, 'R' },
             {"generator", required_argument, 0, 'G' },
-
+            {"silent", no_argument, 0, 's' },
+            {"continue", no_argument, 0, 'c' },
+            {"no-colors", no_argument, 0, 'n' },
+            {"dump-config", no_argument, 0, 'd' },
             {0, 0, 0, 0 }
         };
 
-        c = getopt_long(argc, argv, "h::vI:L:G:",
+        c = getopt_long(argc, argv, "h::vI:L:RG:scnd",
                         long_options, &option_index);
         if(c == -1) {
             break;
         }
 
         switch(c) {
-        case 0:
-            switch(option_index) {
-            default:
-                printf("Option index = %d\n", option_index);
-            }
-            break;
         case 'I':
             if(incdirs == NULL) {
                 incdirs = amxc_var_add_key(amxc_llist_t,
@@ -218,7 +249,7 @@ int ocg_parse_arguments(amxo_parser_t* parser,
                                            "include-dirs",
                                            NULL);
             }
-            amxc_var_add(cstring_t, incdirs, optarg);
+            ocg_config_add_dir(incdirs, optarg);
             break;
 
         case 'L':
@@ -228,7 +259,11 @@ int ocg_parse_arguments(amxo_parser_t* parser,
                                            "import-dirs",
                                            NULL);
             }
-            amxc_var_add(cstring_t, libdirs, optarg);
+            ocg_config_add_dir(libdirs, optarg);
+            break;
+
+        case 'R':
+            amxc_var_add_key(bool, config, "import-resolve", true);
             break;
 
         case 'G':
@@ -238,22 +273,24 @@ int ocg_parse_arguments(amxo_parser_t* parser,
                                               "generators",
                                               NULL);
             }
-            if(add_generator(generators, optarg) != 0) {
+            if(add_generator(config, optarg) != 0) {
                 return -1;
             }
             break;
 
+        case 's':
+            amxc_var_add_key(bool, config, "silent", true);
+            break;
+        case 'c':
+            amxc_var_add_key(bool, config, "continue", true);
+            break;
+        case 'd':
+            amxc_var_add_key(bool, config, "dump-config", true);
+            break;
+        case 'n':
+            enable_colors(false);
+            break;
         case 'h':
-            if((optarg == NULL) &&
-               ( argv[optind] != NULL) &&
-               ( argv[optind][0] != '-')) { // not an option
-                optarg = argv[optind];
-                optind++;
-            } else {  // handle case of argument immediately after option
-                if((optarg != NULL) && (optarg[0] == '=')) {
-                    optarg++;
-                }
-            }
             if(optarg != NULL) {
                 ocg_sub_usage(optarg);
             } else {
@@ -284,27 +321,31 @@ void ocg_config_changed(amxo_parser_t* parser, int section_id) {
 
     ocg_verbose_logging(parser, verbose);
     ocg_generators(parser);
+    ocg_dump_config(parser);
 }
 
 int ocg_apply_config(amxo_parser_t* parser,
                      amxc_var_t* config) {
     int retval = 0;
+    bool import_resolve = GET_BOOL(config, "import-resolve");
     const amxc_htable_t* options = amxc_var_constcast(amxc_htable_t, config);
-    amxc_var_t* var_resolve = NULL;
+    amxc_var_t* var = NULL;
 
     amxc_htable_for_each(it, options) {
         amxc_var_t* option = amxc_var_from_htable_it(it);
         const char* key = amxc_htable_it_get_key(it);
         retval = amxo_parser_set_config(parser, key, option);
-        if(retval != 0) {
-            goto exit;
-        }
     }
 
-    var_resolve = amxo_parser_claim_config(parser, "odl-resolve");
-    amxc_var_set(bool, var_resolve, false);
+    ocg_config_set_default_dirs(parser);
 
-exit:
+    if(!import_resolve) {
+        var = amxo_parser_claim_config(parser, "odl-resolve");
+        amxc_var_set(bool, var, false);
+        var = amxo_parser_claim_config(parser, "odl-import");
+        amxc_var_set(bool, var, false);
+    }
+
     return retval;
 }
 

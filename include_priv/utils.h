@@ -70,7 +70,20 @@ extern "C"
 #include <amxc/amxc.h>
 #include <amxp/amxp_signal.h>
 #include <amxd/amxd_dm.h>
+#include <amxd/amxd_object.h>
 #include <amxo/amxo.h>
+
+#define CONSTRUCTOR __attribute__((constructor))
+#define DESTRUCTOR __attribute__((destructor))
+#define UNUSED __attribute__((unused))
+
+typedef struct _tag {
+    amxc_llist_it_t it;
+    char* line;
+    char* tag;
+    char* arg1;
+    char* rest;
+} tag_t;
 
 int ocg_parse_arguments(amxo_parser_t* parser,
                         amxc_var_t* config,
@@ -82,11 +95,31 @@ void ocg_config_changed(amxo_parser_t* parser, int section_id);
 int ocg_apply_config(amxo_parser_t* parser,
                      amxc_var_t* config);
 
+void ocg_usage(int argc, char* argv[]);
+void ocg_sub_usage(const char* help_topic);
+void ocg_error(amxc_var_t* config, const char* fmt, ...);
+void ocg_warning(amxc_var_t* config, const char* fmt, ...);
+void ocg_message(amxc_var_t* config, const char* fmt, ...);
+
 void ocg_dump_config(amxo_parser_t* parser);
 
 void ocg_verbose_logging(amxo_parser_t* parser, bool enable);
 
 void ocg_gen_dm_methods(amxo_parser_t* parser, bool enable);
+void ocg_gen_xml(amxo_parser_t* parser, bool enable);
+
+int ocg_add(amxo_parser_t* parser, const char* input);
+void ocg_build_include_tree(amxc_var_t* config);
+int ocg_run(amxo_parser_t* parser);
+void ocg_dump_include_tree(amxc_var_t* config, amxc_htable_t* tree_item, int indent);
+void ocg_reset(void);
+
+void ocg_comment_parse(amxo_parser_t* parser, const char* comment);
+
+bool ocg_comment_is_available(void);
+const tag_t* ocg_comment_get_tag(const char* name, const char* arg1);
+const char* ocg_comment_get(void);
+void ocg_comment_set_clear(amxo_parser_t* parser, bool enable);
 
 #ifdef __cplusplus
 }

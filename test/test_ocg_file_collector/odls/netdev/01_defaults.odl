@@ -1,0 +1,6 @@
+%populate {
+    select NetDev.Link {
+        instance add (0,"") {
+        }
+    }
+}

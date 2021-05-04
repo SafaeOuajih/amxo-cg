@@ -88,11 +88,12 @@ extern "C"
 
 #define COLOR_RESET      "\033[0m"
 
-#define BLUE  0
-#define GREEN 1
-#define RED   2
-#define WHITE 3
-#define RESET 4
+#define BLUE   0
+#define GREEN  1
+#define RED    2
+#define WHITE  3
+#define YELLOW 4
+#define RESET  5
 
 #define c(x) get_color(x)
 

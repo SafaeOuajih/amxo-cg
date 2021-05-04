@@ -71,9 +71,11 @@
 #include <amxo/amxo_hooks.h>
 
 #include "utils.h"
+#include "colors.h"
 
 static amxo_hooks_t ocg_hooks = {
     .it = { .next = NULL, .prev = NULL, .llist = NULL },
+    .comment = ocg_comment_parse,
     .start = NULL,
     .end = NULL,
     .start_include = NULL,
@@ -91,22 +93,15 @@ static amxo_hooks_t ocg_hooks = {
     .add_func = NULL,
     .add_func_arg = NULL,
     .end_func = NULL,
+    .add_mib = NULL,
 };
-
-void ocg_dump_config(amxo_parser_t* parser) {
-    fprintf(stderr, "Current parser configuration:\n");
-    fflush(stderr);
-    amxc_var_dump(&parser->config, STDERR_FILENO);
-}
 
 int main(int argc, char* argv[]) {
     int retval = 0;
     int index = 0;
-    amxd_dm_t dm;
     amxc_var_t config;
     amxo_parser_t parser;
 
-    amxd_dm_init(&dm);
     amxo_parser_init(&parser);
     amxc_var_init(&config);
 
@@ -118,31 +113,38 @@ int main(int argc, char* argv[]) {
         goto exit;
     }
 
+    if(index >= argc) {
+        ocg_error(&config, "Missing input files or directories\n");
+        ocg_usage(argc, argv);
+        goto exit;
+    }
+
     retval = ocg_apply_config(&parser, &config);
     if(retval != 0) {
         goto exit;
     }
-    ocg_dump_config(&parser);
     ocg_config_changed(&parser, 0);
 
+    ocg_message(&parser.config, "Collecting files ...");
     while(index < argc) {
-        retval = amxo_parser_parse_file(&parser,
-                                        argv[index++],
-                                        amxd_dm_get_root(&dm));
+        retval = ocg_add(&parser, argv[index++]);
         if(retval != 0) {
-            fprintf(stderr,
-                    "Failed to open %s (%d - %s)\n",
-                    argv[--index],
-                    errno,
-                    strerror(errno));
             goto exit;
         }
     }
+
+    ocg_message(&parser.config, "");
+    ocg_message(&parser.config, "Building include tree ...");
+    ocg_build_include_tree(&parser.config);
+    ocg_dump_include_tree(&parser.config, NULL, 0);
+
+    ocg_message(&parser.config, "");
+    ocg_message(&parser.config, "Run generators ...");
+    retval = ocg_run(&parser);
 
 exit:
     amxc_var_clean(&config);
     amxo_parser_clean(&parser);
     amxo_resolver_import_close_all();
-    amxd_dm_clean(&dm);
     return retval;
 }
