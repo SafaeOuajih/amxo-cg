@@ -75,6 +75,7 @@ int main(void) {
         cmocka_unit_test(test_can_build_include_when_files_are_added_separatly),
         cmocka_unit_test(test_can_run),
         cmocka_unit_test(test_run_fails_with_invalid_odl_file),
+        cmocka_unit_test(test_run_fails_when_errors_found),
         cmocka_unit_test(test_can_run_with_verbose_logger),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);

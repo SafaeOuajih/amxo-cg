@@ -165,6 +165,18 @@ void test_run_fails_with_invalid_odl_file(UNUSED void** state) {
     amxo_parser_clean(&parser);
 }
 
+void test_run_fails_when_errors_found(UNUSED void** state) {
+    amxo_parser_init(&parser);
+
+    assert_int_equal(ocg_add(&parser, "./dhcpv4"), 0);
+    ocg_build_include_tree(&parser.config);
+    ocg_dump_include_tree(&parser.config, NULL, 0);
+    assert_int_not_equal(ocg_run(&parser), 0);
+
+    ocg_reset();
+    amxo_parser_clean(&parser);
+}
+
 void test_can_run_with_verbose_logger(UNUSED void** state) {
     amxo_parser_init(&parser);
 

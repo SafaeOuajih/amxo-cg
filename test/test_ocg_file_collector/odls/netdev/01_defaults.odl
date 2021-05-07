@@ -1,5 +1,5 @@
 %populate {
-    select NetDev.Link {
+    object NetDev.Link {
         instance add (0,"") {
         }
     }

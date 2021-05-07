@@ -76,6 +76,7 @@ void test_can_build_include_tree_silent(UNUSED void** state);
 void test_can_build_include_when_files_are_added_separatly(UNUSED void** state);
 void test_can_run(UNUSED void** state);
 void test_run_fails_with_invalid_odl_file(UNUSED void** state);
+void test_run_fails_when_errors_found(UNUSED void** state);
 void test_can_run_with_verbose_logger(UNUSED void** state);
 
 #endif // __TEST_AMXO_CG_FILE_COLLECTOR_H__

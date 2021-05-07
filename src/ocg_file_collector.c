@@ -238,9 +238,6 @@ static void ocg_clean_tree_root(void) {
             amxc_htable_it_clean(&tree_item->it, ocg_clean_odl_tree);
             continue;
         }
-        if((tree_item->odl_ref->error_count > 0) && (tree_item->odl_ref->type == odl_scan_dir)) {
-            amxc_htable_it_clean(&tree_item->it, ocg_clean_odl_tree);
-        }
     }
 }
 
