@@ -214,6 +214,7 @@ int ocg_parse_arguments(UNUSED amxo_parser_t* parser,
                         char** argv) {
     int c;
     amxc_var_t* incdirs = NULL;
+    amxc_var_t* incodls = NULL;
     amxc_var_t* libdirs = NULL;
     amxc_var_t* generators = NULL;
     amxc_var_set_type(config, AMXC_VAR_ID_HTABLE);
@@ -224,18 +225,20 @@ int ocg_parse_arguments(UNUSED amxo_parser_t* parser,
         static struct option long_options[] = {
             {"help", optional_argument, 0, 'h' },
             {"verbose", no_argument, 0, 'v' },
+            {"include-odl", required_argument, 0, 'i' },
             {"include-dir", required_argument, 0, 'I' },
             {"import-dir", required_argument, 0, 'L' },
             {"import-resolve", no_argument, 0, 'R' },
             {"generator", required_argument, 0, 'G' },
             {"silent", no_argument, 0, 's' },
+            {"no-warnings", no_argument, 0, 'w'},
             {"continue", no_argument, 0, 'c' },
             {"no-colors", no_argument, 0, 'n' },
             {"dump-config", no_argument, 0, 'd' },
             {0, 0, 0, 0 }
         };
 
-        c = getopt_long(argc, argv, "h::vI:L:RG:scnd",
+        c = getopt_long(argc, argv, "h::vi:I:L:RG:swcnd",
                         long_options, &option_index);
         if(c == -1) {
             break;
@@ -250,6 +253,16 @@ int ocg_parse_arguments(UNUSED amxo_parser_t* parser,
                                            NULL);
             }
             ocg_config_add_dir(incdirs, optarg);
+            break;
+
+        case 'i':
+            if(incodls == NULL) {
+                incodls = amxc_var_add_key(amxc_llist_t,
+                                           config,
+                                           "include-odls",
+                                           NULL);
+            }
+            ocg_config_add_dir(incodls, optarg);
             break;
 
         case 'L':
@@ -280,6 +293,9 @@ int ocg_parse_arguments(UNUSED amxo_parser_t* parser,
 
         case 's':
             amxc_var_add_key(bool, config, "silent", true);
+            break;
+        case 'w':
+            amxc_var_add_key(bool, config, "no-warnings", true);
             break;
         case 'c':
             amxc_var_add_key(bool, config, "continue", true);

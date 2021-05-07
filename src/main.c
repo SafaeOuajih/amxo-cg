@@ -101,6 +101,7 @@ int main(int argc, char* argv[]) {
     int index = 0;
     amxc_var_t config;
     amxo_parser_t parser;
+    amxc_var_t* incodls = NULL;
 
     amxo_parser_init(&parser);
     amxc_var_init(&config);
@@ -133,6 +134,15 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    incodls = GET_ARG(&parser.config, "include-odls");
+    if((incodls != NULL) && (amxc_var_type_of(incodls) == AMXC_VAR_ID_LIST)) {
+        amxc_var_for_each(file, incodls) {
+            retval = ocg_add_include(&parser, amxc_var_constcast(cstring_t, file));
+            if(retval != 0) {
+                goto exit;
+            }
+        }
+    }
     ocg_message(&parser.config, "");
     ocg_message(&parser.config, "Building include tree ...");
     ocg_build_include_tree(&parser.config);

@@ -1,4 +1,7 @@
 %define {
+    mib TestMib {
+        string Dummy;
+    }
     /*
         Greeter data model example.
 

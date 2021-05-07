@@ -81,6 +81,7 @@ int main(void) {
         cmocka_unit_test(test_can_add_directory_to_generator),
         cmocka_unit_test(test_can_add_absolute_directory_to_generator),
         cmocka_unit_test(test_can_enable_silent_mode),
+        cmocka_unit_test(test_can_disable_warnings),
         cmocka_unit_test(test_can_enable_continue_on_error),
         cmocka_unit_test(test_can_disable_colors),
         cmocka_unit_test(test_can_enable_verbose),

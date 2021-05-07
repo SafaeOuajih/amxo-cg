@@ -109,6 +109,7 @@ void ocg_gen_dm_methods(amxo_parser_t* parser, bool enable);
 void ocg_gen_xml(amxo_parser_t* parser, bool enable);
 
 int ocg_add(amxo_parser_t* parser, const char* input);
+int ocg_add_include(amxo_parser_t* parser, const char* input);
 void ocg_build_include_tree(amxc_var_t* config);
 int ocg_run(amxo_parser_t* parser);
 void ocg_dump_include_tree(amxc_var_t* config, amxc_htable_t* tree_item, int indent);

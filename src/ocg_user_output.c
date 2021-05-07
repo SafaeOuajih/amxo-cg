@@ -136,6 +136,7 @@ void ocg_usage(UNUSED int argc, char* argv[]) {
     printf("\t-R   --import-resolve   Adds an import directory\n");
     printf("\t-G   --generator        Enables a generator (see generators)\n");
     printf("\t-s   --silent           Supress warnings and messages\n");
+    printf("\t-w   --no-warnings      Supress warnings only\n");
     printf("\t-c   --continue         Continue with other files after error\n");
     printf("\t-n   --no-colors        Disable colored output\n");
     printf("\t-d   --dump-config      Dump parser config, unless silent is set\n");
@@ -176,10 +177,11 @@ void ocg_error(UNUSED amxc_var_t* config, const char* fmt, ...) {
 
 void ocg_warning(amxc_var_t* config, const char* fmt, ...) {
     bool silent = GETP_BOOL(config, "silent");
+    bool warnings = !GETP_BOOL(config, "no-warnings");
     va_list args;
 
     va_start(args, fmt);
-    if(!silent) {
+    if(!silent && warnings) {
         fprintf(stderr, "%sWARNING%s: %s", c(YELLOW), c(RESET), c(WHITE));
         vfprintf(stderr, fmt, args);
         fprintf(stderr, "%s\n", c(RESET));

@@ -145,6 +145,7 @@ void test_can_run(UNUSED void** state) {
     amxo_parser_init(&parser);
 
     assert_int_equal(ocg_add(&parser, "./odls"), 0);
+    assert_int_equal(ocg_add_include(&parser, "./odls/netdev/01_defaults.odl"), 0);
     ocg_build_include_tree(&parser.config);
     ocg_dump_include_tree(&parser.config, NULL, 0);
     assert_int_equal(ocg_run(&parser), 0);
@@ -182,6 +183,7 @@ void test_can_run_with_verbose_logger(UNUSED void** state) {
 
     amxc_var_add_key(bool, &parser.config, "silent", true);
     assert_int_equal(ocg_add(&parser, "./odls"), 0);
+    assert_int_equal(ocg_add_include(&parser, "./odls/netdev/01_defaults.odl"), 0);
     ocg_build_include_tree(&parser.config);
     ocg_dump_include_tree(&parser.config, NULL, 0);
     ocg_verbose_logging(&parser, true);

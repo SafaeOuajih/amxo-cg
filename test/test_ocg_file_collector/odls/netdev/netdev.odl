@@ -16,3 +16,13 @@
 }
 
 include "${definitions_file}";
+
+%define {
+    mib TestMib {
+        string Text;
+    }
+
+    object Dummy {
+        extend with mib TestMib;
+    }
+}

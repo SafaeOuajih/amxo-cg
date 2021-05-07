@@ -119,7 +119,7 @@ void test_can_print_dmm_generator_help(UNUSED void** state) {
 }
 
 void test_can_add_include_dir(UNUSED void** state) {
-    char* argv[] = { "amxo-cg", "-I", "../test_odls", "-I", "./extra_odls" };
+    char* argv[] = { "amxo-cg", "-I", "../test_odls", "-I", "./extra_odls", "-i saved.odl", "-i extra.odl"};
     int index = 0;
     amxc_var_t* inc_dirs = NULL;
 
@@ -128,7 +128,7 @@ void test_can_add_include_dir(UNUSED void** state) {
 
     optind = 1;
     index = ocg_parse_arguments(&parser, &config, sizeof(argv) / sizeof(argv[0]), argv);
-    assert_int_equal(index, 5);
+    assert_int_equal(index, 7);
 
     inc_dirs = GET_ARG(&config, "include-dirs");
     assert_non_null(inc_dirs);
@@ -344,6 +344,27 @@ void test_can_enable_silent_mode(UNUSED void** state) {
     assert_non_null(silent);
     assert_int_equal(amxc_var_type_of(silent), AMXC_VAR_ID_BOOL);
     assert_true(amxc_var_constcast(bool, silent));
+
+    amxo_parser_clean(&parser);
+    amxc_var_clean(&config);
+}
+
+void test_can_disable_warnings(UNUSED void** state) {
+    char* argv[] = { "amxo-cg", "-w" };
+    int index = 0;
+    amxc_var_t* warning = NULL;
+
+    amxo_parser_init(&parser);
+    amxc_var_init(&config);
+
+    optind = 1;
+    index = ocg_parse_arguments(&parser, &config, sizeof(argv) / sizeof(argv[0]), argv);
+    assert_int_equal(index, 2);
+
+    warning = GET_ARG(&config, "no-warnings");
+    assert_non_null(warning);
+    assert_int_equal(amxc_var_type_of(warning), AMXC_VAR_ID_BOOL);
+    assert_true(amxc_var_constcast(bool, warning));
 
     amxo_parser_clean(&parser);
     amxc_var_clean(&config);
