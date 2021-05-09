@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.0 - 2021-05-09(20:58:00 +0000)
+
+### New
+
+- Generate xml/html documentation from odl files
+
+### Fixes
+
+- Fixes test makefile
+- amxo-cg does not exit with status code different from 0 when odl contains errors
+-  It must be possible to add saved files
+
+### Other
+
+- Enable auto opensourcing
+
 ## Release v1.0.4 - 2021-04-21(10:35:14 +0000)
 
 ### Fixes

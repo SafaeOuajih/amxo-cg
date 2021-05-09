@@ -1,3 +1,13 @@
+amxo-cg (1.1.0) unstable; urgency=medium
+
+  * Generate xml/html documentation from odl files
+  * Fixes test makefile
+  * amxo-cg does not exit with status code different from 0 when odl contains errors
+  *  It must be possible to add saved files
+  * Enable auto opensourcing
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Sun, 09 May 2021 20:58:00 +0000
+
 amxo-cg (1.0.4) unstable; urgency=medium
 
   * Disable function resolving
