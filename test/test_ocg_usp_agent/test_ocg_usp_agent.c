@@ -57,98 +57,46 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 #include <getopt.h>
-#include <errno.h>
 
 #include "utils.h"
-#include "colors.h"
 
-static amxo_hooks_t ocg_hooks = {
-    .it = { .next = NULL, .prev = NULL, .llist = NULL },
-    .comment = ocg_comment_parse,
-    .start = NULL,
-    .end = NULL,
-    .start_include = NULL,
-    .end_include = NULL,
-    .set_config = NULL,
-    .start_section = NULL,
-    .end_section = ocg_config_changed,
-    .create_object = NULL,
-    .add_instance = NULL,
-    .select_object = NULL,
-    .end_object = NULL,
-    .add_param = NULL,
-    .set_param = NULL,
-    .end_param = NULL,
-    .add_func = NULL,
-    .add_func_arg = NULL,
-    .end_func = NULL,
-    .add_mib = NULL,
-};
+#include "test_ocg_usp_agent.h"
 
-int main(int argc, char* argv[]) {
-    int retval = 0;
+static amxo_parser_t parser;
+static amxc_var_t config;
+
+void test_can_parse_odl_files(UNUSED void** state) {
+    amxo_parser_init(&parser);
+
+    assert_int_equal(ocg_add(&parser, "./odl"), 0);
+
+    ocg_reset();
+    amxo_parser_clean(&parser);
+}
+
+void test_can_generate_xml(UNUSED void** state) {
+    char* argv[] = { "amxo-cg", "-Gxml", "./odl" };
     int index = 0;
-    amxc_var_t config;
-    amxo_parser_t parser;
-    amxc_var_t* incodls = NULL;
+    amxc_var_t* generators = NULL;
 
     amxo_parser_init(&parser);
     amxc_var_init(&config);
 
-    amxo_parser_set_hooks(&parser, &ocg_hooks);
+    optind = 1;
+    index = ocg_parse_arguments(&parser, &config, sizeof(argv) / sizeof(argv[0]), argv);
+    assert_int_equal(index, 2);
 
-    index = ocg_parse_arguments(&parser, &config, argc, argv);
-    if(index == -1) {
-        retval = 1;
-        goto exit;
-    }
+    generators = GET_ARG(&config, "generators");
+    assert_non_null(generators);
+    assert_int_equal(amxc_var_type_of(generators), AMXC_VAR_ID_HTABLE);
+    assert_int_equal(amxc_htable_size(amxc_var_constcast(amxc_htable_t, generators)), 1);
 
-    if(index >= argc) {
-        ocg_error(&config, "Missing input files or directories\n");
-        ocg_usage(argc, argv);
-        goto exit;
-    }
-
-    retval = ocg_apply_config(&parser, &config);
-    if(retval != 0) {
-        goto exit;
-    }
-    ocg_config_changed(&parser, 0);
-
-    ocg_message(&parser.config, "Collecting files ...");
-    while(index < argc) {
-        retval = ocg_add(&parser, argv[index++]);
-        if(retval != 0) {
-            goto exit;
-        }
-    }
-
-    incodls = GET_ARG(&parser.config, "include-odls");
-    if((incodls != NULL) && (amxc_var_type_of(incodls) == AMXC_VAR_ID_LIST)) {
-        amxc_var_for_each(file, incodls) {
-            retval = ocg_add_include(&parser, amxc_var_constcast(cstring_t, file));
-            if(retval != 0) {
-                goto exit;
-            }
-        }
-    }
-    ocg_message(&parser.config, "");
-    ocg_message(&parser.config, "Building include tree ...");
-    ocg_build_include_tree(&parser.config);
-    ocg_dump_include_tree(&parser.config, NULL, 0);
-
-    ocg_message(&parser.config, "");
-    ocg_message(&parser.config, "Run generators ...");
-    retval = ocg_run(&parser);
-
-exit:
-    amxc_var_clean(&config);
     amxo_parser_clean(&parser);
-    amxo_resolver_import_close_all();
-    return retval;
+    amxc_var_clean(&config);
 }

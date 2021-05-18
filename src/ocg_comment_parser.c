@@ -68,8 +68,6 @@
 #include <regex.h>
 #include <ctype.h>
 
-#include <amxc/amxc.h>
-
 #include "utils.h"
 
 typedef struct _desc_regexp {

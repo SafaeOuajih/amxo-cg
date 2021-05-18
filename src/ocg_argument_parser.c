@@ -66,11 +66,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <amxc/amxc.h>
-#include <amxp/amxp_signal.h>
-#include <amxd/amxd_dm.h>
-#include <amxo/amxo.h>
-
 #include "utils.h"
 #include "colors.h"
 

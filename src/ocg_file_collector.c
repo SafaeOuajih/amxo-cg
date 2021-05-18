@@ -74,12 +74,6 @@
 #include <libgen.h>
 #include <errno.h>
 
-#include <amxc/amxc.h>
-#include <amxp/amxp_signal.h>
-#include <amxd/amxd_dm.h>
-#include <amxo/amxo.h>
-#include <amxo/amxo_hooks.h>
-
 #include "utils.h"
 
 typedef enum _collection_type {
@@ -247,12 +241,45 @@ static void ocg_clean_tree_root(void) {
     }
 }
 
-static void ocg_open_include(UNUSED amxo_parser_t* parser, const char* incfile) {
+static int ocg_parse_files(amxo_parser_t* parser,
+                           amxd_dm_t* dm,
+                           amxc_var_t* base_config,
+                           collection_type_t type) {
+    int rv = 0;
+    bool cont = GET_BOOL(&parser->config, "continue");
+
+    amxc_htable_for_each(it, (&odl_tree_root.odl_files)) {
+        const char* file = amxc_htable_it_get_key(it);
+        odl_tree_item_t* ti = amxc_container_of(it, odl_tree_item_t, it);
+        if(ti->odl_ref->type != type) {
+            continue;
+        }
+        ocg_reset_parser(parser, base_config, file);
+        ocg_message(&parser->config, "Parsing file [%s]", file);
+        rv += amxo_parser_parse_file(parser, file, amxd_dm_get_root(dm));
+        if(rv != 0) {
+            ocg_error(&parser->config, "Error parsing [%s]", file);
+            ocg_error(&parser->config, "%s", amxc_string_get(&parser->msg, 0));
+            if(!cont) {
+                break;
+            }
+        }
+    }
+
+    return rv;
+}
+
+static void ocg_open_include(amxo_parser_t* parser, const char* incfile) {
     amxc_htable_it_t* it = amxc_htable_get(&odl_files, incfile);
     odl_file_t* odl_file = NULL;
     odl_tree_item_t* tree_item = NULL;
+    bool orig_silent = GET_BOOL(&parser->config, "silent");
+    amxc_var_t* silent = GET_ARG(&parser->config, "silent");
 
     if(it == NULL) {
+        amxc_var_set(bool, silent, false);
+        ocg_message(&parser->config, "Add included file [%s]", incfile);
+        amxc_var_set(bool, silent, orig_silent);
         odl_file = ocg_add_file(strdup(incfile), odl_include);
     } else {
         odl_file = amxc_container_of(it, odl_file_t, it);
@@ -299,6 +326,33 @@ static amxo_hooks_t ocg_hooks = {
     .add_mib = NULL
 };
 
+static void ocg_check_odl_file(amxo_parser_t* parser,
+                               amxd_object_t* root,
+                               const char* file_name,
+                               odl_file_t* odl_file) {
+    odl_tree_item_t* tree_item = (odl_tree_item_t*) calloc(1, sizeof(odl_tree_item_t));
+    tree_item->odl_ref = odl_file;
+    amxc_htable_init(&tree_item->odl_files, 10);
+    amxc_htable_insert(&odl_tree_root.odl_files, file_name, &tree_item->it);
+
+    tree_current = tree_item;
+    if(amxo_parser_parse_file(parser, file_name, root) != 0) {
+        odl_file->error_count++;
+    } else {
+        if(parser->post_includes != NULL) {
+            amxc_var_for_each(f, parser->post_includes) {
+                const char* file = amxc_var_constcast(cstring_t, f);
+                ocg_open_include(parser, file);
+                if(amxo_parser_parse_file(parser, file, root) != 0) {
+                    odl_file->error_count++;
+                }
+                ocg_end_include(parser, file);
+                amxc_var_delete(&f);
+            }
+        }
+    }
+}
+
 void ocg_build_include_tree(amxc_var_t* config) {
     amxd_dm_t dm;
     amxo_parser_t parser;
@@ -323,22 +377,16 @@ void ocg_build_include_tree(amxc_var_t* config) {
         odl_file_t* odl_file = amxc_container_of(it, odl_file_t, it);
 
         if(odl_file->use_count == 0) {
-            odl_tree_item_t* tree_item = (odl_tree_item_t*) calloc(1, sizeof(odl_tree_item_t));
             amxc_var_t* var = NULL;
-            tree_item->odl_ref = odl_file;
-            amxc_htable_init(&tree_item->odl_files, 10);
-            amxc_htable_insert(&odl_tree_root.odl_files, file_name, &tree_item->it);
-
             amxd_dm_init(&dm);
             ocg_reset_parser(&parser, config, file_name);
             var = amxo_parser_claim_config(&parser, "odl-resolve");
             amxc_var_set(bool, var, false);
             var = amxo_parser_claim_config(&parser, "odl-import");
             amxc_var_set(bool, var, false);
-            tree_current = tree_item;
-            if(amxo_parser_parse_file(&parser, file_name, amxd_dm_get_root(&dm)) != 0) {
-                odl_file->error_count++;
-            }
+
+            ocg_check_odl_file(&parser, amxd_dm_get_root(&dm), file_name, odl_file);
+
             amxd_dm_clean(&dm);
         }
     }
@@ -356,34 +404,6 @@ int ocg_add(amxo_parser_t* parser, const char* input) {
 
 int ocg_add_include(amxo_parser_t* parser, const char* input) {
     return ocg_add_implementation(parser, input, odl_include);
-}
-
-static int ocg_parse_files(amxo_parser_t* parser,
-                           amxd_dm_t* dm,
-                           amxc_var_t* base_config,
-                           collection_type_t type) {
-    int rv = 0;
-    bool cont = GET_BOOL(&parser->config, "continue");
-
-    amxc_htable_for_each(it, (&odl_tree_root.odl_files)) {
-        const char* file = amxc_htable_it_get_key(it);
-        odl_tree_item_t* ti = amxc_container_of(it, odl_tree_item_t, it);
-        if(ti->odl_ref->type != type) {
-            continue;
-        }
-        ocg_reset_parser(parser, base_config, file);
-        ocg_message(&parser->config, "Parsing file [%s]", file);
-        rv += amxo_parser_parse_file(parser, file, amxd_dm_get_root(dm));
-        if(rv != 0) {
-            ocg_error(&parser->config, "Error parsing [%s]", file);
-            ocg_error(&parser->config, "%s", amxc_string_get(&parser->msg, 0));
-            if(!cont) {
-                break;
-            }
-        }
-    }
-
-    return rv;
 }
 
 int ocg_run(amxo_parser_t* parser) {

@@ -213,6 +213,7 @@ void gen_xml_object_instance(amxo_parser_t* parser,
         xmlSetNsProp(child, xml_ctx->ns, BAD_CAST "name",
                      BAD_CAST amxd_object_get_name(instance, AMXD_OBJECT_INDEXED));
         xmlSetNsProp(child, xml_ctx->ns, BAD_CAST "path", BAD_CAST path);
+
         xmlSetNsProp(child, xml_ctx->ns, BAD_CAST "instance", BAD_CAST "true");
         xmlAddChild(xml_ctx->xml_object, child);
 
@@ -251,6 +252,7 @@ void gen_xml_object_select(UNUSED amxo_parser_t* parser,
     ppath = amxd_object_get_path(parent, AMXD_OBJECT_SUPPORTED | AMXD_OBJECT_TERMINATE);
     amxc_string_setf(&full_path, "%s%s", ppath == NULL ? "" : ppath, path);
     xml_ctx->xml_object = gen_xml_find(xml_ctx->doc, amxc_string_get(&full_path, 0), NULL);
+
     free(ppath);
 
 exit:

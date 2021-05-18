@@ -63,13 +63,6 @@
 #include <string.h>
 #include <getopt.h>
 
-#include <amxc/amxc.h>
-#include <amxp/amxp_signal.h>
-#include <amxd/amxd_dm.h>
-#include <amxd/amxd_object.h>
-#include <amxo/amxo.h>
-#include <amxo/amxo_hooks.h>
-
 #include "utils.h"
 #include "colors.h"
 

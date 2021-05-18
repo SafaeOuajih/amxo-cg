@@ -59,96 +59,16 @@
 ****************************************************************************/
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <getopt.h>
-#include <errno.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-#include "utils.h"
-#include "colors.h"
+#include "test_ocg_usp_agent.h"
 
-static amxo_hooks_t ocg_hooks = {
-    .it = { .next = NULL, .prev = NULL, .llist = NULL },
-    .comment = ocg_comment_parse,
-    .start = NULL,
-    .end = NULL,
-    .start_include = NULL,
-    .end_include = NULL,
-    .set_config = NULL,
-    .start_section = NULL,
-    .end_section = ocg_config_changed,
-    .create_object = NULL,
-    .add_instance = NULL,
-    .select_object = NULL,
-    .end_object = NULL,
-    .add_param = NULL,
-    .set_param = NULL,
-    .end_param = NULL,
-    .add_func = NULL,
-    .add_func_arg = NULL,
-    .end_func = NULL,
-    .add_mib = NULL,
-};
-
-int main(int argc, char* argv[]) {
-    int retval = 0;
-    int index = 0;
-    amxc_var_t config;
-    amxo_parser_t parser;
-    amxc_var_t* incodls = NULL;
-
-    amxo_parser_init(&parser);
-    amxc_var_init(&config);
-
-    amxo_parser_set_hooks(&parser, &ocg_hooks);
-
-    index = ocg_parse_arguments(&parser, &config, argc, argv);
-    if(index == -1) {
-        retval = 1;
-        goto exit;
-    }
-
-    if(index >= argc) {
-        ocg_error(&config, "Missing input files or directories\n");
-        ocg_usage(argc, argv);
-        goto exit;
-    }
-
-    retval = ocg_apply_config(&parser, &config);
-    if(retval != 0) {
-        goto exit;
-    }
-    ocg_config_changed(&parser, 0);
-
-    ocg_message(&parser.config, "Collecting files ...");
-    while(index < argc) {
-        retval = ocg_add(&parser, argv[index++]);
-        if(retval != 0) {
-            goto exit;
-        }
-    }
-
-    incodls = GET_ARG(&parser.config, "include-odls");
-    if((incodls != NULL) && (amxc_var_type_of(incodls) == AMXC_VAR_ID_LIST)) {
-        amxc_var_for_each(file, incodls) {
-            retval = ocg_add_include(&parser, amxc_var_constcast(cstring_t, file));
-            if(retval != 0) {
-                goto exit;
-            }
-        }
-    }
-    ocg_message(&parser.config, "");
-    ocg_message(&parser.config, "Building include tree ...");
-    ocg_build_include_tree(&parser.config);
-    ocg_dump_include_tree(&parser.config, NULL, 0);
-
-    ocg_message(&parser.config, "");
-    ocg_message(&parser.config, "Run generators ...");
-    retval = ocg_run(&parser);
-
-exit:
-    amxc_var_clean(&config);
-    amxo_parser_clean(&parser);
-    amxo_resolver_import_close_all();
-    return retval;
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_can_parse_odl_files),
+        cmocka_unit_test(test_can_generate_xml),
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
 }

@@ -63,8 +63,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "colors.h"
 #include "utils.h"
+#include "colors.h"
 
 static const char* colors[] = {
     COLOR_BRIGHT_BLUE,
