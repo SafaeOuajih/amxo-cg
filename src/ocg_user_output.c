@@ -128,12 +128,16 @@ void ocg_usage(UNUSED int argc, char* argv[]) {
     printf("\t-I   --include-dir      Adds an include directory\n");
     printf("\t-L   --import-dir       Adds an import directory\n");
     printf("\t-R   --import-resolve   Adds an import directory\n");
+    printf("\t-i   --include-odl      Adds an odl file that should be treated as include file\n");
     printf("\t-G   --generator        Enables a generator (see generators)\n");
     printf("\t-s   --silent           Supress warnings and messages\n");
     printf("\t-w   --no-warnings      Supress warnings only\n");
     printf("\t-c   --continue         Continue with other files after error\n");
     printf("\t-n   --no-colors        Disable colored output\n");
     printf("\t-d   --dump-config      Dump parser config, unless silent is set\n");
+    printf("\t-r   --reset            Clear data model before loading next root odl\n");
+    printf("\n");
+    printf("WARNING: do not use -r and -i in combination\n");
     printf("\n");
     printf("Generators:\n");
     printf("-----------\n");

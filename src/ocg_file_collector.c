@@ -247,12 +247,17 @@ static int ocg_parse_files(amxo_parser_t* parser,
                            collection_type_t type) {
     int rv = 0;
     bool cont = GET_BOOL(&parser->config, "continue");
+    bool reset = GET_BOOL(&parser->config, "reset");
 
     amxc_htable_for_each(it, (&odl_tree_root.odl_files)) {
         const char* file = amxc_htable_it_get_key(it);
         odl_tree_item_t* ti = amxc_container_of(it, odl_tree_item_t, it);
         if(ti->odl_ref->type != type) {
             continue;
+        }
+        if(reset) {
+            amxd_dm_clean(dm);
+            amxd_dm_init(dm);
         }
         ocg_reset_parser(parser, base_config, file);
         ocg_message(&parser->config, "Parsing file [%s]", file);

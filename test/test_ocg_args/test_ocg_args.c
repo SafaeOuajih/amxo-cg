@@ -349,6 +349,27 @@ void test_can_enable_silent_mode(UNUSED void** state) {
     amxc_var_clean(&config);
 }
 
+void test_can_enable_reset_mode(UNUSED void** state) {
+    char* argv[] = { "amxo-cg", "-r" };
+    int index = 0;
+    amxc_var_t* reset = NULL;
+
+    amxo_parser_init(&parser);
+    amxc_var_init(&config);
+
+    optind = 1;
+    index = ocg_parse_arguments(&parser, &config, sizeof(argv) / sizeof(argv[0]), argv);
+    assert_int_equal(index, 2);
+
+    reset = GET_ARG(&config, "reset");
+    assert_non_null(reset);
+    assert_int_equal(amxc_var_type_of(reset), AMXC_VAR_ID_BOOL);
+    assert_true(amxc_var_constcast(bool, reset));
+
+    amxo_parser_clean(&parser);
+    amxc_var_clean(&config);
+}
+
 void test_can_disable_warnings(UNUSED void** state) {
     char* argv[] = { "amxo-cg", "-w" };
     int index = 0;

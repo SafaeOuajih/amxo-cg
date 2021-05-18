@@ -82,6 +82,7 @@ void test_fails_when_non_existing_dir_given(UNUSED void** state);
 void test_can_add_directory_to_generator(UNUSED void** state);
 void test_can_add_absolute_directory_to_generator(UNUSED void** state);
 void test_can_enable_silent_mode(UNUSED void** state);
+void test_can_enable_reset_mode(UNUSED void** state);
 void test_can_disable_warnings(UNUSED void** state);
 void test_can_enable_continue_on_error(UNUSED void** state);
 void test_can_disable_colors(UNUSED void** state);

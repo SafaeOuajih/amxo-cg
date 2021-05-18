@@ -230,10 +230,11 @@ int ocg_parse_arguments(UNUSED amxo_parser_t* parser,
             {"continue", no_argument, 0, 'c' },
             {"no-colors", no_argument, 0, 'n' },
             {"dump-config", no_argument, 0, 'd' },
+            {"reset", no_argument, 0, 'r' },
             {0, 0, 0, 0 }
         };
 
-        c = getopt_long(argc, argv, "h::vi:I:L:RG:swcnd",
+        c = getopt_long(argc, argv, "h::vi:I:L:RG:swcndr",
                         long_options, &option_index);
         if(c == -1) {
             break;
@@ -297,6 +298,9 @@ int ocg_parse_arguments(UNUSED amxo_parser_t* parser,
             break;
         case 'd':
             amxc_var_add_key(bool, config, "dump-config", true);
+            break;
+        case 'r':
+            amxc_var_add_key(bool, config, "reset", true);
             break;
         case 'n':
             enable_colors(false);
