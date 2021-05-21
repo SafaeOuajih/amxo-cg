@@ -1,3 +1,11 @@
+amxo-cg (.1.1) unstable; urgency=medium
+
+  * Include tree is not build correctly
+  * add command line reset option
+  * Update README
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Fri, 21 May 2021 12:41:18 +0000
+
 amxo-cg (1.1.0) unstable; urgency=medium
 
   * Generate xml/html documentation from odl files

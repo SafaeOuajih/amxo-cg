@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.1 - 2021-05-21(12:41:17 +0000)
+
+### Fixes
+
+- Include tree is not build correctly
+
+### Changes
+
+- add command line reset option
+- Update README
+
 ## Release v1.1.0 - 2021-05-09(20:58:00 +0000)
 
 ### New
