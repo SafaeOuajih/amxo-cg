@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.2 - 2021-06-08(11:29:50 +0000)
+
+### Fixes
+
+- [tr181 plugins][makefile] Dangerous clean target for all tr181 components
+
 ## Release v1.1.1 - 2021-05-21(12:41:17 +0000)
 
 ### Fixes
