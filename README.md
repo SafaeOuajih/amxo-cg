@@ -74,6 +74,7 @@ You could install all tools needed for testing and developing on your local mach
 - [libamxo](https://gitlab.com/soft.at.home/ambiorix/libraries/libamxo) - The ODL compiler library
 - [libamxc](https://gitlab.com/soft.at.home/ambiorix/libraries/libamxc) - Generic C api for common data containers
 - [libamxd](https://gitlab.com/soft.at.home/ambiorix/libraries/libamxd) - Data model C API
+- [libxml2](https://gitlab.gnome.org/GNOME/libxml2) - XML Toolkit
 
 #### Build amxo-cg
 
@@ -88,11 +89,11 @@ You could install all tools needed for testing and developing on your local mach
 
 1. Install dependencies
 
-    Although the container will contain all tools needed for building, it does not contain the libraries needed for building `amxo-cg`. To be able to build `amxo-cg` you need `libamxd`, `libamxc` and `libamxo`. These libraries can be installed in the container by executing the following commands. 
+    Although the container will contain all tools needed for building, it does not contain the libraries needed for building `amxo-cg`. To be able to build `amxo-cg` you need `libamxd`, `libamxc`, `libamxo` and libxml2. These libraries can be installed in the container by executing the following commands. 
 
     ```bash
     sudo apt update
-    sudo apt install libamxo
+    sudo apt install libamxo libxml2-dev
     ```
 
     Note that you do not need to install all components explicitly. Some components will be installed automatically because other components depend on them.
