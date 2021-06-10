@@ -181,7 +181,8 @@ static amxo_hooks_t fgen_hooks = {
     .add_func = gen_xml_func_start,
     .add_func_arg = gen_xml_func_add_param,
     .end_func = gen_xml_func_end,
-    .add_mib = gen_xml_object_add_mib
+    .add_mib = gen_xml_object_add_mib,
+    .set_counter = gen_xml_set_counter
 };
 
 void ocg_gen_xml(amxo_parser_t* parser, bool enable) {

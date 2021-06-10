@@ -342,6 +342,7 @@ static amxo_hooks_t logger_hooks = {
     .add_func_arg = log_add_func_arg,
     .end_func = log_end_func,
     .add_mib = NULL,
+    .set_counter = NULL,
 };
 
 void ocg_verbose_logging(amxo_parser_t* parser, bool enable) {

@@ -155,3 +155,20 @@ void gen_xml_parameter_end(UNUSED amxo_parser_t* parser,
     xml_gen_t* xml_ctx = gen_xml_get_ctx();
     xml_ctx->xml_param = NULL;
 }
+
+void gen_xml_set_counter(UNUSED amxo_parser_t* parser,
+                         UNUSED amxd_object_t* parent,
+                         const char* name) {
+    xml_gen_t* xml_ctx = gen_xml_get_ctx();
+
+    xml_ctx->xml_param = xmlNewNode(xml_ctx->ns, BAD_CAST "parameter");
+    xmlSetNsProp(xml_ctx->xml_param, xml_ctx->ns,
+                 BAD_CAST "name", BAD_CAST name);
+    xmlSetNsProp(xml_ctx->xml_param, xml_ctx->ns,
+                 BAD_CAST "type", BAD_CAST gen_xml_odl_type(AMXC_VAR_ID_UINT32));
+    xmlAddChild(xml_ctx->xml_object, xml_ctx->xml_param);
+    gen_xml_add_defined(parser, xml_ctx->xml_param);
+
+    gen_xml_add_description(xml_ctx->xml_param);
+    gen_xml_add_version(xml_ctx->xml_param);
+}

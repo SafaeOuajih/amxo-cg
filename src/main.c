@@ -88,6 +88,7 @@ static amxo_hooks_t ocg_hooks = {
     .add_func_arg = NULL,
     .end_func = NULL,
     .add_mib = NULL,
+    .set_counter = NULL,
 };
 
 int main(int argc, char* argv[]) {

@@ -205,6 +205,7 @@ static amxo_hooks_t comment_hooks = {
     .add_func_arg = NULL,
     .end_func = comment_end_func,
     .add_mib = NULL,
+    .set_counter = NULL,
 };
 
 static void ocg_comment_free_tag(amxc_llist_it_t* it) {

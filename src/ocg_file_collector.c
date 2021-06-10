@@ -328,7 +328,8 @@ static amxo_hooks_t ocg_hooks = {
     .add_func = NULL,
     .add_func_arg = NULL,
     .end_func = NULL,
-    .add_mib = NULL
+    .add_mib = NULL,
+    .set_counter = NULL,
 };
 
 static void ocg_check_odl_file(amxo_parser_t* parser,

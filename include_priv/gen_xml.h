@@ -170,6 +170,10 @@ void gen_xml_parameter_set(amxo_parser_t* parser,
 void gen_xml_parameter_end(amxo_parser_t* parser,
                            amxd_object_t* object,
                            amxd_param_t* param);
+
+void gen_xml_set_counter(amxo_parser_t* parser,
+                         amxd_object_t* parent,
+                         const char* name);
 ///////////////////////////////////////////////////////////////////////////////
 
 // Data Model Function XML generation - ODL parser hook functions

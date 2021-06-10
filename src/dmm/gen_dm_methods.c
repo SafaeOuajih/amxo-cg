@@ -322,6 +322,7 @@ static amxo_hooks_t fgen_hooks = {
     .add_func_arg = ocg_dm_methods_func_arg,
     .end_func = ocg_dm_methods_end_func,
     .add_mib = NULL,
+    .set_counter = NULL
 };
 
 void ocg_gen_dm_methods(amxo_parser_t* parser, bool enable) {
