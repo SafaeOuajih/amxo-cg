@@ -1,10 +1,3 @@
-amxo-cg (1.1.4) unstable; urgency=medium
-
-  * Issue: ambiorix/applications/amxo-cg#13 Missing reference to libxml2-dev in README
-  * Issue: ambiorix/applications/amxo-cg#14 Parameters defined using `counted with` are not present in XML output
-
- -- Peter DEHERDT <peter.deherdt@softathome.com>  Thu, 10 Jun 2021 14:34:55 +0000
-
 amxo-cg (1.1.3) unstable; urgency=medium
 
 
