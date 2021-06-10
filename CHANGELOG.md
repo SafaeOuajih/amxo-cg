@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.4 - 2021-06-10(14:34:55 +0000)
+
+- Issue: ambiorix/applications/amxo-cg#13 Missing reference to libxml2-dev in README
+- Issue: ambiorix/applications/amxo-cg#14 Parameters defined using `counted with` are not present in XML output
+
 ## Release v1.1.3 - 2021-06-08(17:48:12 +0000)
 
 ## Release v1.1.2 - 2021-06-08(11:29:50 +0000)
