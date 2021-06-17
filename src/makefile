@@ -69,4 +69,4 @@ $(OBJDIR)/:
 clean:
 	rm -rf ../output/ $(COMPONENT) include_priv/version.h
 
-.PHONY: clean all ../include_priv/version.h
+.PHONY: clean all
