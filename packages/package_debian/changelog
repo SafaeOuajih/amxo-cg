@@ -1,3 +1,10 @@
+amxo-cg (1.1.5) unstable; urgency=medium
+
+  * Generation of version.h files should not be .PHONY
+  * Issue: ambiorix/applications/amxo-cg#14 Parameters defined using `counted with` are not present in XML output
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 17 Jun 2021 07:43:20 +0000
+
 amxo-cg (1.1.4) unstable; urgency=medium
 
   * Issue: ambiorix/applications/amxo-cg#13 Missing reference to libxml2-dev in README

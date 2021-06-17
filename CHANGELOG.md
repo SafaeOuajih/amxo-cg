@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.5 - 2021-06-17(07:43:20 +0000)
+
+### Fixes
+
+- Generation of version.h files should not be .PHONY
+
+### Other
+
+- Issue: ambiorix/applications/amxo-cg#14 Parameters defined using `counted with` are not present in XML output
+
 ## Release v1.1.4 - 2021-06-10(14:34:55 +0000)
 
 - Issue: ambiorix/applications/amxo-cg#13 Missing reference to libxml2-dev in README
