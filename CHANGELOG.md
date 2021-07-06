@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.1.6 - 2021-07-06(12:49:49 +0000)
+
+### Fixes
+
+- Not passing any input files results in exit code 0
+
 ## Release v1.1.5 - 2021-06-17(07:43:20 +0000)
 
 ### Fixes
