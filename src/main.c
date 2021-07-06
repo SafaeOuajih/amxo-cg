@@ -112,6 +112,7 @@ int main(int argc, char* argv[]) {
     if(index >= argc) {
         ocg_error(&config, "Missing input files or directories\n");
         ocg_usage(argc, argv);
+        retval = 1;
         goto exit;
     }
 
