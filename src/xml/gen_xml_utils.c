@@ -176,3 +176,21 @@ void gen_xml_add_defined(amxo_parser_t* parser, xmlNodePtr item) {
 
     amxc_string_clean(&line);
 }
+
+amxc_string_t* gen_xml_compute_full_path(amxd_object_t* object,
+                                         const char* name,
+                                         const char* func) {
+    amxc_string_t* full_path = NULL;
+    char* path = amxd_object_get_path(object, AMXD_OBJECT_TERMINATE);
+
+    amxc_string_new(&full_path, 0);
+
+    if(func == NULL) {
+        amxc_string_setf(full_path, "%s%s", path, name);
+    } else {
+        amxc_string_setf(full_path, "%s%s(%s)", path, func, name);
+    }
+
+    free(path);
+    return full_path;
+}

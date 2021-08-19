@@ -7,5 +7,5 @@ variables:
   PC_CROSS_COMPILATION: "off"
 
 include:
-  - remote: 'https://gitlab.com/soft.at.home/ci/gitlab-ci/raw/master/ambiorix-default-pipeline.yml'
+  - remote: 'https://gitlab.com/soft.at.home/ci/gitlab-ci/raw/main/ambiorix-default-pipeline.yml'
 

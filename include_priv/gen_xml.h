@@ -127,6 +127,7 @@ void gen_xml_add_defined(amxo_parser_t* parser, xmlNodePtr item);
 void gen_xml_add_description(xmlNodePtr node);
 void gen_xml_add_version(xmlNodePtr node);
 void gen_xml_add_return_tag(xmlNodePtr node);
+amxc_string_t* gen_xml_compute_full_path(amxd_object_t* object, const char* name, const char* func);
 ///////////////////////////////////////////////////////////////////////////////
 
 // Data Model Object XML generation - ODL parser hook functions

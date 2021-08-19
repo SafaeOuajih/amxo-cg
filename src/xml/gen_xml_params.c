@@ -92,6 +92,7 @@ void gen_xml_parameter_start(amxo_parser_t* parser,
         "volatile", "instance-counter", "key", "unique", "protected"
     };
     xml_gen_t* xml_ctx = gen_xml_get_ctx();
+    amxc_string_t* full_path = gen_xml_compute_full_path(object, name, NULL);
 
     xml_ctx->xml_param = gen_xml_search_param(object, name);
 
@@ -99,6 +100,8 @@ void gen_xml_parameter_start(amxo_parser_t* parser,
         xml_ctx->xml_param = xmlNewNode(xml_ctx->ns, BAD_CAST "parameter");
         xmlSetNsProp(xml_ctx->xml_param, xml_ctx->ns,
                      BAD_CAST "name", BAD_CAST name);
+        xmlSetNsProp(xml_ctx->xml_param, xml_ctx->ns,
+                     BAD_CAST "path", BAD_CAST amxc_string_get(full_path, 0));
         xmlSetNsProp(xml_ctx->xml_param, xml_ctx->ns,
                      BAD_CAST "type", BAD_CAST gen_xml_odl_type(type));
         gen_xml_attributes(xml_ctx->xml_param, attr_bitmask,
@@ -109,6 +112,8 @@ void gen_xml_parameter_start(amxo_parser_t* parser,
         gen_xml_add_description(xml_ctx->xml_param);
         gen_xml_add_version(xml_ctx->xml_param);
     }
+
+    amxc_string_delete(&full_path);
 }
 
 void gen_xml_parameter_set(amxo_parser_t* parser,

@@ -101,10 +101,13 @@ void gen_xml_func_start(amxo_parser_t* parser,
         "private", "protected", "template", "instance"
     };
     xml_gen_t* xml_ctx = gen_xml_get_ctx();
+    amxc_string_t* full_path = gen_xml_compute_full_path(object, name, NULL);
 
     xml_ctx->xml_func = xmlNewNode(xml_ctx->ns, BAD_CAST "function");
     xmlSetNsProp(xml_ctx->xml_func, xml_ctx->ns,
                  BAD_CAST "name", BAD_CAST name);
+    xmlSetNsProp(xml_ctx->xml_func, xml_ctx->ns,
+                 BAD_CAST "path", BAD_CAST amxc_string_get(full_path, 0));
     gen_xml_attributes(xml_ctx->xml_func, attr_bitmask,
                        amxd_fattr_max, attr_names);
     xmlAddChild(xml_ctx->xml_object, xml_ctx->xml_func);
@@ -114,6 +117,8 @@ void gen_xml_func_start(amxo_parser_t* parser,
 
     gen_xml_add_description(xml_ctx->xml_func);
     gen_xml_add_version(xml_ctx->xml_func);
+
+    amxc_string_delete(&full_path);
 }
 
 void gen_xml_func_end(UNUSED amxo_parser_t* parser,
@@ -124,8 +129,8 @@ void gen_xml_func_end(UNUSED amxo_parser_t* parser,
 }
 
 void gen_xml_func_add_param(UNUSED amxo_parser_t* parser,
-                            UNUSED amxd_object_t* parent,
-                            UNUSED amxd_function_t* func,
+                            amxd_object_t* parent,
+                            amxd_function_t* func,
                             const char* name,
                             int64_t attr_bitmask,
                             uint32_t type,
@@ -135,13 +140,18 @@ void gen_xml_func_add_param(UNUSED amxo_parser_t* parser,
         "in", "out", "mandatory", "strict"
     };
     xml_gen_t* xml_ctx = gen_xml_get_ctx();
+    amxc_string_t* full_path = gen_xml_compute_full_path(parent, name, func->name);
 
     arg = xmlNewNode(xml_ctx->ns, BAD_CAST "argument");
     xmlSetNsProp(arg, xml_ctx->ns,
                  BAD_CAST "name", BAD_CAST name);
     xmlSetNsProp(arg, xml_ctx->ns,
+                 BAD_CAST "path", BAD_CAST amxc_string_get(full_path, 0));
+    xmlSetNsProp(arg, xml_ctx->ns,
                  BAD_CAST "type", BAD_CAST gen_xml_odl_type(type));
     gen_xml_attributes(arg, attr_bitmask, amxd_aattr_max, attr_names);
     xmlAddChild(xml_ctx->xml_func, arg);
     gen_xml_add_arg_description(arg, name);
+
+    amxc_string_delete(&full_path);
 }
