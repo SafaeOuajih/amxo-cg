@@ -71,9 +71,9 @@ You could install all tools needed for testing and developing on your local mach
 
 #### Prerequisites
 
-- [libamxo](https://gitlab.com/soft.at.home/ambiorix/libraries/libamxo) - The ODL compiler library
-- [libamxc](https://gitlab.com/soft.at.home/ambiorix/libraries/libamxc) - Generic C api for common data containers
-- [libamxd](https://gitlab.com/soft.at.home/ambiorix/libraries/libamxd) - Data model C API
+- [libamxo](https://gitlab.com/prpl-foundation/components/ambiorix/libraries/libamxo) - The ODL compiler library
+- [libamxc](https://gitlab.com/prpl-foundation/components/ambiorix/libraries/libamxc) - Generic C api for common data containers
+- [libamxd](https://gitlab.com/prpl-foundation/components/ambiorix/libraries/libamxd) - Data model C API
 - [libxml2](https://gitlab.gnome.org/GNOME/libxml2) - XML Toolkit
 
 #### Build amxo-cg
@@ -84,7 +84,7 @@ You could install all tools needed for testing and developing on your local mach
 
     ```bash
     cd ~/amx_project/applications
-    git clone git@gitlab.com:soft.at.home/ambiorix/applications/amxo-cg.git
+    git clone git@gitlab.com:prpl-foundation/components/ambiorix/applications/amxo-cg.git
     ``` 
 
 1. Install dependencies

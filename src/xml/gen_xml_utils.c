@@ -108,7 +108,6 @@ xmlNodePtr gen_xml_find(xmlDocPtr doc,
         node = xpath_obj->nodesetval->nodeTab[0];
         break;
     default:
-        printf("!!! Found %d for %s = IMPOSSIBLE\n", size, path);
         // error case
         break;
     }

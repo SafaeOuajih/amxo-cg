@@ -92,9 +92,9 @@ static void gen_xml_object_add(amxo_parser_t* parser,
 
     amxc_string_init(&full_path, 0);
     if(path != NULL) {
-        amxc_string_setf(&full_path, "%s%s", path, name);
+        amxc_string_setf(&full_path, "%s%s.", path, name);
     } else {
-        amxc_string_setf(&full_path, "%s", name);
+        amxc_string_setf(&full_path, "%s.", name);
     }
 
     child = gen_xml_find(xml_ctx->doc, amxc_string_get(&full_path, 0), NULL);
@@ -145,7 +145,7 @@ static void gen_xml_add_tree(amxd_object_t* const object,
     uint32_t flags =
         (xml_ctx->section == 1) ? AMXD_OBJECT_SUPPORTED : AMXD_OBJECT_INDEXED;
     amxo_parser_t* parser = (amxo_parser_t*) priv;
-    char* path = amxd_object_get_path(object, flags);
+    char* path = amxd_object_get_path(object, flags | AMXD_OBJECT_TERMINATE);
 
     xmlNodePtr xml_object = gen_xml_find(xml_ctx->doc, path, NULL);
 
@@ -205,7 +205,7 @@ void gen_xml_object_instance(amxo_parser_t* parser,
     xmlNodePtr child = NULL;
     xml_gen_t* xml_ctx = gen_xml_get_ctx();
     amxd_object_t* instance = amxd_object_get_instance(parent, name, index);
-    char* path = amxd_object_get_path(instance, AMXD_OBJECT_INDEXED);
+    char* path = amxd_object_get_path(instance, AMXD_OBJECT_INDEXED | AMXD_OBJECT_TERMINATE);
 
     child = gen_xml_find(xml_ctx->doc, path, NULL);
     if(child == NULL) {
@@ -237,11 +237,12 @@ void gen_xml_object_select(UNUSED amxo_parser_t* parser,
                            const char* path) {
     xml_gen_t* xml_ctx = gen_xml_get_ctx();
     char* ppath = NULL;
+    amxd_object_t* object = NULL;
     amxc_string_t full_path;
     amxc_string_init(&full_path, 0);
 
     ppath = amxd_object_get_path(parent, AMXD_OBJECT_INDEXED | AMXD_OBJECT_TERMINATE);
-    amxc_string_setf(&full_path, "%s%s", ppath == NULL ? "" : ppath, path);
+    amxc_string_setf(&full_path, "%s%s.", ppath == NULL ? "" : ppath, path);
     xml_ctx->xml_object = gen_xml_find(xml_ctx->doc, amxc_string_get(&full_path, 0), NULL);
     free(ppath);
 
@@ -249,8 +250,19 @@ void gen_xml_object_select(UNUSED amxo_parser_t* parser,
         goto exit;
     }
 
+    object = amxd_object_findf(parent, "%s.", path);
+    if(object != NULL) {
+        ppath = amxd_object_get_path(object, AMXD_OBJECT_INDEXED | AMXD_OBJECT_TERMINATE);
+        xml_ctx->xml_object = gen_xml_find(xml_ctx->doc, ppath, NULL);
+        free(ppath);
+
+        if(xml_ctx->xml_object != NULL) {
+            goto exit;
+        }
+    }
+
     ppath = amxd_object_get_path(parent, AMXD_OBJECT_SUPPORTED | AMXD_OBJECT_TERMINATE);
-    amxc_string_setf(&full_path, "%s%s", ppath == NULL ? "" : ppath, path);
+    amxc_string_setf(&full_path, "%s%s.", ppath == NULL ? "" : ppath, path);
     xml_ctx->xml_object = gen_xml_find(xml_ctx->doc, amxc_string_get(&full_path, 0), NULL);
 
     free(ppath);

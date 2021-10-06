@@ -58,6 +58,11 @@
 **
 ****************************************************************************/
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <libgen.h>
+
 #include "gen_xml.h"
 
 static xml_gen_t xml_ctx;
@@ -78,6 +83,33 @@ static void gen_xml_add_location(amxo_parser_t* parser, const char* file) {
     xmlAddChild(xml_ctx.xml_locations, node);
 }
 
+static void gen_xml_build_file_name(amxc_string_t* file,
+                                    const char* dir_name,
+                                    const char* base_name) {
+    struct stat statbuf;
+
+    // Improvement: strip extenstion from basename
+
+    // No filename or directory name given, use the base name + ".xml"
+    if((dir_name == NULL) || (*dir_name == 0)) {
+        amxc_string_setf(file, "./%s.xml", base_name);
+        goto exit;
+    }
+
+    stat(dir_name, &statbuf);
+    if(S_ISDIR(statbuf.st_mode)) {
+        // it is a directory - use given dir + base name + ".xml"
+        amxc_string_setf(file, "%s/%s.xml", dir_name, base_name);
+        goto exit;
+    }
+
+    // it is just a file name
+    amxc_string_setf(file, "%s", dir_name);
+
+exit:
+    return;
+}
+
 static void gen_xml_start(amxo_parser_t* parser) {
     amxc_var_t* gens = amxo_parser_get_config(parser, "generators");
     amxc_var_t* var_dir_name = amxc_var_get_key(gens,
@@ -89,32 +121,31 @@ static void gen_xml_start(amxo_parser_t* parser) {
     amxc_string_t file;
     amxc_string_init(&file, 0);
 
-    // TODO: Better file name (strip odl extension - add xml extension)
-    // If no file name from parser - generate file name ?
-    // Parser can parse odl strings - then no file name is available
-    if((dir_name == NULL) || (*dir_name == 0)) {
-        amxc_string_setf(&file, "./%s.xml", bn);
-    } else {
-        amxc_string_setf(&file, "%s/%s.xml", dir_name, bn);
+    if(xml_ctx.doc == NULL) {
+        gen_xml_build_file_name(&file, dir_name, bn);
+        xml_ctx.xml_file_name = amxc_string_take_buffer(&file);
+
+        xml_ctx.doc = xmlNewDoc(BAD_CAST "1.0");
+        xml_ctx.xml_root = xmlNewNode(NULL, BAD_CAST "odl:datamodel-set");
+        xmlNewNs(xml_ctx.xml_root, BAD_CAST "http://www.w3.org/1999/xhtml", BAD_CAST NULL);
+        xml_ctx.ns = xmlNewNs(xml_ctx.xml_root, BAD_CAST "http://www.softathome.com/odl", BAD_CAST "odl");
+
+        xmlDocSetRootElement(xml_ctx.doc, xml_ctx.xml_root);
+
+        xml_ctx.xml_locations = xmlNewNode(xml_ctx.ns, BAD_CAST "locations");
+        gen_xml_add_location(parser, parser->file);
+        xmlAddChild(xml_ctx.xml_root, xml_ctx.xml_locations);
     }
-    xml_ctx.xml_file_name = amxc_string_take_buffer(&file);
-
-    xml_ctx.doc = xmlNewDoc(BAD_CAST "1.0");
-    xml_ctx.xml_root = xmlNewNode(NULL, BAD_CAST "odl:datamodel-set");
-    xmlNewNs(xml_ctx.xml_root, BAD_CAST "http://www.w3.org/1999/xhtml", BAD_CAST NULL);
-    xml_ctx.ns = xmlNewNs(xml_ctx.xml_root, BAD_CAST "http://www.softathome.com/odl", BAD_CAST "odl");
-
-    xmlDocSetRootElement(xml_ctx.doc, xml_ctx.xml_root);
-
-    xml_ctx.xml_locations = xmlNewNode(xml_ctx.ns, BAD_CAST "locations");
-    gen_xml_add_location(parser, parser->file);
-    xmlAddChild(xml_ctx.xml_root, xml_ctx.xml_locations);
 
     amxc_string_clean(&file);
     free(filename);
 }
 
-static void gen_xml_end(amxo_parser_t* parser) {
+static void gen_xml_end(UNUSED amxo_parser_t* parser) {
+
+}
+
+static void gen_xml_close(amxo_parser_t* parser) {
     int retval = 0;
     if(xml_ctx.xml_file_name != NULL) {
         ocg_message(&parser->config, "Creating file [%s]", xml_ctx.xml_file_name);
@@ -189,6 +220,7 @@ void ocg_gen_xml(amxo_parser_t* parser, bool enable) {
     if(enable) {
         amxo_parser_set_hooks(parser, &fgen_hooks);
     } else {
+        gen_xml_close(parser);
         amxo_parser_unset_hooks(parser, &fgen_hooks);
     }
 }

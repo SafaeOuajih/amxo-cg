@@ -149,6 +149,7 @@ int main(int argc, char* argv[]) {
     retval = ocg_run(&parser);
 
 exit:
+    ocg_config_remove_generators(&parser);
     amxc_var_clean(&config);
     amxo_parser_clean(&parser);
     amxo_resolver_import_close_all();

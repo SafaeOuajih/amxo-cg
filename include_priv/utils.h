@@ -96,6 +96,8 @@ void ocg_config_changed(amxo_parser_t* parser, int section_id);
 int ocg_apply_config(amxo_parser_t* parser,
                      amxc_var_t* config);
 
+void ocg_config_remove_generators(amxo_parser_t* parser);
+
 void ocg_usage(int argc, char* argv[]);
 void ocg_sub_usage(const char* help_topic);
 void ocg_error(amxc_var_t* config, const char* fmt, ...);

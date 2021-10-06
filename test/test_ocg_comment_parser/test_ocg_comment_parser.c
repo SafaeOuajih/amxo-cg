@@ -107,6 +107,7 @@ void test_comments_are_parsed(UNUSED void** state) {
     assert_int_equal(ocg_run(&parser), 0);
 
     ocg_reset();
+    ocg_config_remove_generators(&parser);
     amxo_parser_clean(&parser);
 }
 
@@ -126,5 +127,6 @@ void test_parsed_comments_are_used_by_generators(UNUSED void** state) {
     assert_int_equal(ocg_run(&parser), 0);
 
     ocg_reset();
+    ocg_config_remove_generators(&parser);
     amxo_parser_clean(&parser);
 }

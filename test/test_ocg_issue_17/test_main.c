@@ -58,37 +58,16 @@
 **
 ****************************************************************************/
 
-#ifndef __TEST_AMXO_CG_ARGS_H__
-#define __TEST_AMXO_CG_ARGS_H__
+#include <stdlib.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
 
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_object.h>
-#include <amxo/amxo.h>
+#include "test_ocg_issue_17.h"
 
-#include "utils.h"
-
-void test_can_print_help(UNUSED void** state);
-void test_can_print_xml_generator_help(UNUSED void** state);
-void test_can_print_dmm_generator_help(UNUSED void** state);
-void test_can_add_include_dir(UNUSED void** state);
-void test_can_add_import_dir(UNUSED void** state);
-void test_duplicate_dis_are_ignored(UNUSED void** state);
-void test_can_enable_resolving(UNUSED void** state);
-void test_can_add_generator(UNUSED void** state);
-void test_fails_with_invalid_generator(UNUSED void** state);
-void test_fails_with_duplicate_generator(UNUSED void** state);
-void test_can_add_directory_to_generator(UNUSED void** state);
-void test_can_add_absolute_directory_to_generator(UNUSED void** state);
-void test_can_enable_silent_mode(UNUSED void** state);
-void test_can_enable_reset_mode(UNUSED void** state);
-void test_can_disable_warnings(UNUSED void** state);
-void test_can_enable_continue_on_error(UNUSED void** state);
-void test_can_disable_colors(UNUSED void** state);
-void test_can_enable_verbose(UNUSED void** state);
-void test_fails_when_invalid_argument_given(UNUSED void** state);
-void test_merge_command_line_options_and_parser_config(UNUSED void** state);
-void test_can_dump_config(UNUSED void** state);
-void test_does_not_dump_config_when_silent(UNUSED void** state);
-
-#endif // __TEST_AMXO_CG_ARGS_H__
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_can_create_xml),
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}

@@ -57,38 +57,35 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 **
 ****************************************************************************/
-
-#ifndef __TEST_AMXO_CG_ARGS_H__
-#define __TEST_AMXO_CG_ARGS_H__
-
-#include <amxc/amxc.h>
-#include <amxp/amxp.h>
-#include <amxd/amxd_object.h>
-#include <amxo/amxo.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <setjmp.h>
+#include <stdarg.h>
+#include <cmocka.h>
+#include <getopt.h>
 
 #include "utils.h"
 
-void test_can_print_help(UNUSED void** state);
-void test_can_print_xml_generator_help(UNUSED void** state);
-void test_can_print_dmm_generator_help(UNUSED void** state);
-void test_can_add_include_dir(UNUSED void** state);
-void test_can_add_import_dir(UNUSED void** state);
-void test_duplicate_dis_are_ignored(UNUSED void** state);
-void test_can_enable_resolving(UNUSED void** state);
-void test_can_add_generator(UNUSED void** state);
-void test_fails_with_invalid_generator(UNUSED void** state);
-void test_fails_with_duplicate_generator(UNUSED void** state);
-void test_can_add_directory_to_generator(UNUSED void** state);
-void test_can_add_absolute_directory_to_generator(UNUSED void** state);
-void test_can_enable_silent_mode(UNUSED void** state);
-void test_can_enable_reset_mode(UNUSED void** state);
-void test_can_disable_warnings(UNUSED void** state);
-void test_can_enable_continue_on_error(UNUSED void** state);
-void test_can_disable_colors(UNUSED void** state);
-void test_can_enable_verbose(UNUSED void** state);
-void test_fails_when_invalid_argument_given(UNUSED void** state);
-void test_merge_command_line_options_and_parser_config(UNUSED void** state);
-void test_can_dump_config(UNUSED void** state);
-void test_does_not_dump_config_when_silent(UNUSED void** state);
+#include "test_ocg_issue_17.h"
 
-#endif // __TEST_AMXO_CG_ARGS_H__
+static amxo_parser_t parser;
+static amxc_var_t config;
+
+void test_can_create_xml(UNUSED void** state) {
+    amxo_parser_init(&parser);
+    amxc_var_init(&config);
+
+    assert_int_equal(ocg_add(&parser, "./odl/firewall_definition.odl"), 0);
+    assert_int_equal(ocg_add_include(&parser, "./odl/firewall_defaults.odl"), 0);
+
+    ocg_gen_xml(&parser, true);
+    ocg_verbose_logging(&parser, true);
+
+    ocg_build_include_tree(&parser.config);
+    ocg_dump_include_tree(&parser.config, NULL, 0);
+    assert_int_equal(ocg_run(&parser), 0);
+
+    ocg_reset();
+    ocg_config_remove_generators(&parser);
+    amxo_parser_clean(&parser);
+}

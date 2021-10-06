@@ -65,6 +65,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <libgen.h>
 
 #include "utils.h"
 #include "colors.h"
@@ -80,13 +81,52 @@
 
 static int check_exists(amxc_var_t* config, const char* path) {
     struct stat path_stat;
-    int retval = stat(path, &path_stat);
+    char* check_path = strdup(path);
+    char* dir = NULL;
+    int retval = stat(check_path, &path_stat);
 
-    if(retval != 0) {
-        ocg_error(config, "[%s] - %s", path, strerror(errno));
+    if(retval == 0) {
+        goto exit;
     }
 
+    dir = dirname(check_path);
+    retval = stat(dir, &path_stat);
+
+    if(retval == 0) {
+        goto exit;
+    }
+
+    ocg_error(config, "[%s] - %s", path, strerror(errno));
+
+exit:
+    free(check_path);
     return retval;
+}
+
+static void build_file_name(amxc_string_t* file_path, const char* directory) {
+    char* current_wd = getcwd(NULL, 0);
+    char* real_path = NULL;
+
+    amxc_string_setf(file_path, "%s/%s", current_wd, directory == NULL ? "" : directory);
+    real_path = realpath(amxc_string_get(file_path, 0), NULL);
+
+    if((real_path == NULL) || (*real_path == 0)) {
+        int len = 0;
+
+        free(current_wd);
+        free(real_path);
+
+        current_wd = amxc_string_take_buffer(file_path);
+        current_wd = dirname(current_wd);
+        len = strlen(current_wd) + 1;
+        real_path = realpath(current_wd, NULL);
+        amxc_string_setf(file_path, "%s/%s", real_path, current_wd + len);
+    } else {
+        amxc_string_setf(file_path, "%s", real_path);
+    }
+
+    free(current_wd);
+    free(real_path);
 }
 
 static int add_generator(amxc_var_t* config, char* input) {
@@ -134,15 +174,10 @@ static int add_generator(amxc_var_t* config, char* input) {
     }
 
     if((directory == NULL) || (*directory == 0) || (directory[0] != '/')) {
-        char* current_wd = getcwd(NULL, 0);
-        char* real_path = NULL;
         amxc_string_t file_path;
         amxc_string_init(&file_path, 0);
-        amxc_string_setf(&file_path, "%s/%s", current_wd, directory == NULL ? "" : directory);
-        real_path = realpath(amxc_string_get(&file_path, 0), NULL);
-        amxc_var_add_key(cstring_t, generators, valids[i], real_path);
-        free(current_wd);
-        free(real_path);
+        build_file_name(&file_path, directory);
+        amxc_var_add_key(cstring_t, generators, valids[i], amxc_string_get(&file_path, 0));
         amxc_string_clean(&file_path);
     } else {
         amxc_var_add_key(cstring_t, generators, valids[i], directory);
@@ -364,3 +399,10 @@ int ocg_apply_config(amxo_parser_t* parser,
     return retval;
 }
 
+void ocg_config_remove_generators(amxo_parser_t* parser) {
+    amxc_var_t* gens = amxo_parser_get_config(parser, "generators");
+
+    amxc_var_clean(gens);
+    amxc_var_set_type(gens, AMXC_VAR_ID_HTABLE);
+    ocg_config_changed(parser, 0);
+}
