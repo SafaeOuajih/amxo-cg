@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.1 - 2021-10-13(12:13:49 +0000)
+
+### Fixes
+
+- Parsing defaults values fails if parent is referenced by Alias
+
 ## Release v1.2.0 - 2021-08-23(11:27:22 +0000)
 
 ### New

@@ -1,3 +1,9 @@
+amxo-cg (1.2.1) unstable; urgency=medium
+
+  * Parsing defaults values fails if parent is referenced by Alias
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Wed, 13 Oct 2021 12:13:49 +0000
+
 amxo-cg (1.2.0) unstable; urgency=medium
 
   * Extra info needed in generated xml
