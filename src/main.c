@@ -143,6 +143,7 @@ int main(int argc, char* argv[]) {
     ocg_message(&parser.config, "Building include tree ...");
     ocg_build_include_tree(&parser.config);
     ocg_dump_include_tree(&parser.config, NULL, 0);
+    ocg_dump_files_list(&parser.config);
 
     ocg_message(&parser.config, "");
     ocg_message(&parser.config, "Run generators ...");

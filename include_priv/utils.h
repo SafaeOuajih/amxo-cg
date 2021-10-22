@@ -117,6 +117,7 @@ void ocg_build_include_tree(amxc_var_t* config);
 int ocg_verify_include_tree(amxc_var_t* config);
 int ocg_run(amxo_parser_t* parser);
 void ocg_dump_include_tree(amxc_var_t* config, amxc_htable_t* tree_item, int indent);
+void ocg_dump_files_list(amxc_var_t* config);
 void ocg_reset(void);
 
 void ocg_comment_parse(amxo_parser_t* parser, const char* comment);

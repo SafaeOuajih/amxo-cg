@@ -88,6 +88,7 @@ typedef struct _odl_file {
     uint32_t error_count;
     collection_type_t type;
     amxc_htable_it_t it;
+    amxc_llist_it_t lit;
 } odl_file_t;
 
 typedef struct _odl_tree_item {
@@ -97,6 +98,7 @@ typedef struct _odl_tree_item {
 } odl_tree_item_t;
 
 static amxc_htable_t odl_files;
+static amxc_llist_t list_files;
 static odl_tree_item_t odl_tree_root;
 
 static odl_tree_item_t* tree_current = NULL;
@@ -107,6 +109,7 @@ static int ocg_scan_dir(amxo_parser_t* parser,
 
 static void ocg_clean_odl_files(UNUSED const char* key, amxc_htable_it_t* it) {
     odl_file_t* odl_file = amxc_container_of(it, odl_file_t, it);
+    amxc_llist_it_take(&odl_file->lit);
     free(odl_file->file);
     free(odl_file);
 }
@@ -124,6 +127,7 @@ static void CONSTRUCTOR ocg_scan_init(void) {
     odl_tree_root.it.key = NULL;
     odl_tree_root.it.next = NULL;
     amxc_htable_init(&odl_tree_root.odl_files, 32);
+    amxc_llist_init(&list_files);
 }
 
 static void DESTRUCTOR ocg_scan_clean(void) {
@@ -140,6 +144,7 @@ static odl_file_t* ocg_add_file(char* file, collection_type_t type) {
         odl_file->file = file;
         odl_file->type = type;
         amxc_htable_insert(&odl_files, file, &odl_file->it);
+        amxc_llist_append(&list_files, &odl_file->lit);
     } else {
         free(file);
         odl_file = amxc_container_of(it, odl_file_t, it);
@@ -249,9 +254,15 @@ static int ocg_parse_files(amxo_parser_t* parser,
     bool cont = GET_BOOL(&parser->config, "continue");
     bool reset = GET_BOOL(&parser->config, "reset");
 
-    amxc_htable_for_each(it, (&odl_tree_root.odl_files)) {
-        const char* file = amxc_htable_it_get_key(it);
-        odl_tree_item_t* ti = amxc_container_of(it, odl_tree_item_t, it);
+    amxc_llist_for_each(it, &list_files) {
+        odl_file_t* odl_file = amxc_container_of(it, odl_file_t, lit);
+        const char* file = odl_file->file;
+        amxc_htable_it_t* ti_it = amxc_htable_get(&odl_tree_root.odl_files, file);
+        odl_tree_item_t* ti = NULL;
+        if(ti_it == NULL) {
+            continue;
+        }
+        ti = amxc_container_of(ti_it, odl_tree_item_t, it);
         if(ti->odl_ref->type != type) {
             continue;
         }
@@ -291,6 +302,7 @@ static void ocg_open_include(amxo_parser_t* parser, const char* incfile) {
         odl_file->type = odl_include;
     }
     odl_file->use_count++;
+    amxc_llist_it_take(&odl_file->lit);
 
     it = amxc_htable_get(&tree_current->odl_files, incfile);
     if(it == NULL) {
@@ -490,6 +502,14 @@ void ocg_dump_include_tree(amxc_var_t* config, amxc_htable_t* tree_item, int ind
 
 exit:
     return;
+}
+
+void ocg_dump_files_list(amxc_var_t* config) {
+    ocg_message(config, "Files that will be parsed are:");
+    amxc_llist_for_each(it, &list_files) {
+        odl_file_t* odl_file = amxc_container_of(it, odl_file_t, lit);
+        fprintf(stderr, "       %s\n", odl_file->file);
+    }
 }
 
 void ocg_reset(void) {
