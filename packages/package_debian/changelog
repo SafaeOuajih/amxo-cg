@@ -1,3 +1,10 @@
+amxo-cg (1.2.2) unstable; urgency=medium
+
+  * amxo-cg sometimes doesn't properly detect passed filename
+  * Parse odl files in order given on commandline
+
+ -- SAH bot <sahbot@softathome.com>  Fri, 22 Oct 2021 11:18:14 +0000
+
 amxo-cg (1.2.1) unstable; urgency=medium
 
   * Parsing defaults values fails if parent is referenced by Alias

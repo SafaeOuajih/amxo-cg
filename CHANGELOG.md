@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.2 - 2021-10-22(11:18:14 +0000)
+
+### Fixes
+
+- amxo-cg sometimes doesn't properly detect passed filename
+
+### Changes
+
+- Parse odl files in order given on commandline
+
 ## Release v1.2.1 - 2021-10-13(12:13:49 +0000)
 
 ### Fixes
