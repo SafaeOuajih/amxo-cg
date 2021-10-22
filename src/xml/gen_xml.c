@@ -83,7 +83,8 @@ static void gen_xml_add_location(amxo_parser_t* parser, const char* file) {
     xmlAddChild(xml_ctx.xml_locations, node);
 }
 
-static void gen_xml_build_file_name(amxc_string_t* file,
+static void gen_xml_build_file_name(amxo_parser_t* parser,
+                                    amxc_string_t* file,
                                     const char* dir_name,
                                     const char* base_name) {
     struct stat statbuf;
@@ -93,18 +94,24 @@ static void gen_xml_build_file_name(amxc_string_t* file,
     // No filename or directory name given, use the base name + ".xml"
     if((dir_name == NULL) || (*dir_name == 0)) {
         amxc_string_setf(file, "./%s.xml", base_name);
+        ocg_message(&parser->config, "Generate xml file [%s]", amxc_string_get(file, 0));
         goto exit;
     }
 
-    stat(dir_name, &statbuf);
-    if(S_ISDIR(statbuf.st_mode)) {
-        // it is a directory - use given dir + base name + ".xml"
-        amxc_string_setf(file, "%s/%s.xml", dir_name, base_name);
-        goto exit;
+    if(stat(dir_name, &statbuf) == 0) {
+        if(S_ISDIR(statbuf.st_mode)) {
+            // it is a directory - use given dir + base name + ".xml"
+            ocg_message(&parser->config, "Output directory [%s]", dir_name);
+            amxc_string_setf(file, "%s/%s.xml", dir_name, base_name);
+            ocg_message(&parser->config, "Generate xml file [%s]", amxc_string_get(file, 0));
+            goto exit;
+        }
     }
 
     // it is just a file name
+    ocg_message(&parser->config, "Output file [%s]", dir_name);
     amxc_string_setf(file, "%s", dir_name);
+    ocg_message(&parser->config, "Generate xml file [%s]", amxc_string_get(file, 0));
 
 exit:
     return;
@@ -122,7 +129,7 @@ static void gen_xml_start(amxo_parser_t* parser) {
     amxc_string_init(&file, 0);
 
     if(xml_ctx.doc == NULL) {
-        gen_xml_build_file_name(&file, dir_name, bn);
+        gen_xml_build_file_name(parser, &file, dir_name, bn);
         xml_ctx.xml_file_name = amxc_string_take_buffer(&file);
 
         xml_ctx.doc = xmlNewDoc(BAD_CAST "1.0");
