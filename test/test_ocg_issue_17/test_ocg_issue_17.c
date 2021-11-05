@@ -89,3 +89,21 @@ void test_can_create_xml(UNUSED void** state) {
     ocg_config_remove_generators(&parser);
     amxo_parser_clean(&parser);
 }
+
+void test_xml_gen_does_not_seg_fault(UNUSED void** state) {
+    amxo_parser_init(&parser);
+    amxc_var_init(&config);
+
+    assert_int_equal(ocg_add(&parser, "./odl/prplmesh.odl"), 0);
+
+    ocg_gen_xml(&parser, true);
+    ocg_verbose_logging(&parser, true);
+
+    ocg_build_include_tree(&parser.config);
+    ocg_dump_include_tree(&parser.config, NULL, 0);
+    assert_int_equal(ocg_run(&parser), 0);
+
+    ocg_reset();
+    ocg_config_remove_generators(&parser);
+    amxo_parser_clean(&parser);
+}

@@ -97,6 +97,11 @@ static void gen_xml_object_add(amxo_parser_t* parser,
         amxc_string_setf(&full_path, "%s.", name);
     }
 
+    if((type == amxd_object_template) &&
+       ((path_flags & AMXD_OBJECT_SUPPORTED) == AMXD_OBJECT_SUPPORTED)) {
+        amxc_string_append(&full_path, "{i}.", 4);
+    }
+
     child = gen_xml_find(xml_ctx->doc, amxc_string_get(&full_path, 0), NULL);
     if(child == NULL) {
         child = xmlNewNode(xml_ctx->ns, BAD_CAST "object");
@@ -264,8 +269,21 @@ void gen_xml_object_select(UNUSED amxo_parser_t* parser,
     ppath = amxd_object_get_path(parent, AMXD_OBJECT_SUPPORTED | AMXD_OBJECT_TERMINATE);
     amxc_string_setf(&full_path, "%s%s.", ppath == NULL ? "" : ppath, path);
     xml_ctx->xml_object = gen_xml_find(xml_ctx->doc, amxc_string_get(&full_path, 0), NULL);
-
     free(ppath);
+
+    if(xml_ctx->xml_object != NULL) {
+        goto exit;
+    }
+
+    if(object != NULL) {
+        ppath = amxd_object_get_path(object, AMXD_OBJECT_SUPPORTED | AMXD_OBJECT_TERMINATE);
+        xml_ctx->xml_object = gen_xml_find(xml_ctx->doc, ppath, NULL);
+        free(ppath);
+
+        if(xml_ctx->xml_object != NULL) {
+            goto exit;
+        }
+    }
 
 exit:
     amxc_string_clean(&full_path);

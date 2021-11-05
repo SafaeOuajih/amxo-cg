@@ -68,6 +68,7 @@
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_can_create_xml),
+        cmocka_unit_test(test_xml_gen_does_not_seg_fault),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

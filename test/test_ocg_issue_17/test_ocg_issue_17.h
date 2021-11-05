@@ -69,5 +69,6 @@
 #include "utils.h"
 
 void test_can_create_xml(UNUSED void** state);
+void test_xml_gen_does_not_seg_fault(UNUSED void** state);
 
 #endif // __TEST_AMXO_CG_ISSUE_17_H__
