@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.3 - 2021-11-10(20:04:56 +0000)
+
+### Fixes
+
+- amxo-cg crashes when trying to parse prplMesh ODL files
+
 ## Release v1.2.2 - 2021-10-22(11:18:14 +0000)
 
 ### Fixes
