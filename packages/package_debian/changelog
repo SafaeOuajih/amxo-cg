@@ -1,3 +1,9 @@
+amxo-cg (1.2.4) unstable; urgency=medium
+
+  * Issue: ambiorix/applications/amxo-cg#20 Add STAGINGDIR to CFLAGS and LDFLAGS
+
+ -- SAH bot <sahbot@softathome.com>  Thu, 02 Dec 2021 15:40:02 +0000
+
 amxo-cg (1.2.3) unstable; urgency=medium
 
   * amxo-cg crashes when trying to parse prplMesh ODL files

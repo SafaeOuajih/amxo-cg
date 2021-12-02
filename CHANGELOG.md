@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.4 - 2021-12-02(15:40:01 +0000)
+
+### Other
+
+- Issue: ambiorix/applications/amxo-cg#20 Add STAGINGDIR to CFLAGS and LDFLAGS
+
 ## Release v1.2.3 - 2021-11-10(20:04:56 +0000)
 
 ### Fixes
