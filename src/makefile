@@ -7,7 +7,8 @@ TARGET = $(COMPONENT)-$(VERSION)
 # source directories
 SRCDIR = .
 INCDIR_PRIV = ../include_priv
-INCDIRS = $(INCDIR_PRIV)
+INCDIRS = $(INCDIR_PRIV) $(if $(STAGINGDIR), $(STAGINGDIR)/include) $(if $(STAGINGDIR), $(STAGINGDIR)/usr/include)
+STAGING_LIBDIR = $(if $(STAGINGDIR), -L$(STAGINGDIR)/lib) $(if $(STAGINGDIR), -L$(STAGINGDIR)/usr/lib)
 
 # build destination directories
 OBJDIR = ../output/$(MACHINE)
@@ -36,7 +37,7 @@ else
 	CFLAGS += -Wstrict-prototypes -Wold-style-definition -Wnested-externs -std=gnu11 
 endif
 
-LDFLAGS += -lamxc -lamxd -lamxo $(shell pkg-config --libs libxml-2.0)
+LDFLAGS += $(shell pkg-config --libs libxml-2.0) $(STAGING_LIBDIR) -lamxc -lamxd -lamxo
 
 # targets
 all: ../include_priv/version.h $(COMPONENT)
