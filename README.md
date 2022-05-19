@@ -43,7 +43,7 @@ You could install all tools needed for testing and developing on your local mach
     Pull the image:
 
     ```bash
-    docker pull softathome/oss-dbg:latest
+    docker pull registry.gitlab.com/soft.at.home/docker/oss-dbg:latest
     ```
 
     Before launching the container, you should create a directory which will be shared between your local machine and the container.
@@ -55,7 +55,7 @@ You could install all tools needed for testing and developing on your local mach
     Launch the container:
 
     ```bash
-    docker run -ti -d --name oss-dbg --restart always --cap-add=SYS_PTRACE --sysctl net.ipv6.conf.all.disable_ipv6=1 -e "USER=$USER" -e "UID=$(id -u)" -e "GID=$(id -g)" -v ~/amx_project/:/home/$USER/amx_project/ softathome/oss-dbg:latest
+    docker run -ti -d --name oss-dbg --restart always --cap-add=SYS_PTRACE --sysctl net.ipv6.conf.all.disable_ipv6=1 -e "USER=$USER" -e "UID=$(id -u)" -e "GID=$(id -g)" -v ~/amx_project/:/home/$USER/amx_project/ registry.gitlab.com/soft.at.home/docker/oss-dbg:latest
     ```
 
     The `-v` option bind mounts the local directory for the ambiorix project in the container, at the exact same place.

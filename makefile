@@ -5,11 +5,6 @@ NOW = $(shell date +"%Y-%m-%d(%H:%M:%S %z)")
 # Extra destination directories
 PKGDIR = ./output/$(MACHINE)/pkg/
 
-# helper functions - used in multiple targets
-define install_to
-	$(INSTALL) -D -p -m 0755 src/$(COMPONENT) $(1)$(BINDIR)/$(COMPONENT)
-endef
-
 define create_changelog
 	@$(ECHO) "Update changelog"
 	mv CHANGELOG.md CHANGELOG.md.bak
@@ -32,10 +27,10 @@ clean:
 	$(MAKE) -C test clean
 
 install: all
-	$(call install_to,$(DEST))
+	$(INSTALL) -D -p -m 0755 src/$(COMPONENT) $(DEST)$(BINDIR)/$(COMPONENT)
 
 package: all
-	$(call install_to,$(PKGDIR))
+	$(INSTALL) -D -p -m 0755 src/$(COMPONENT) $(PKGDIR)$(BINDIR)/$(COMPONENT)
 	cd $(PKGDIR) && $(TAR) -czvf ../$(COMPONENT)-$(VERSION).tar.gz .
 	cp $(PKGDIR)../$(COMPONENT)-$(VERSION).tar.gz .
 	make -C packages
