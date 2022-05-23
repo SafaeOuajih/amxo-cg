@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.5 - 2022-05-23(14:21:07 +0000)
+
+### Other
+
+- [Gitlab CI][Unit tests][valgrind] Pipeline doesn't stop when...
+
 ## Release v1.2.4 - 2021-12-02(15:40:01 +0000)
 
 ### Other

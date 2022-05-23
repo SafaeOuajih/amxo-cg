@@ -1,3 +1,9 @@
+amxo-cg (1.2.5) unstable; urgency=medium
+
+  * [Gitlab CI][Unit tests][valgrind] Pipeline doesn't stop when...
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Mon, 23 May 2022 14:21:08 +0000
+
 amxo-cg (1.2.4) unstable; urgency=medium
 
   * Issue: ambiorix/applications/amxo-cg#20 Add STAGINGDIR to CFLAGS and LDFLAGS
