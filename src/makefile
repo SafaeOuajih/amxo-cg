@@ -37,7 +37,7 @@ else
 	CFLAGS += -Wstrict-prototypes -Wold-style-definition -Wnested-externs -std=gnu11 
 endif
 
-LDFLAGS += $(shell pkg-config --libs libxml-2.0) $(STAGING_LIBDIR) -lamxc -lamxd -lamxo
+LDFLAGS += $(shell pkg-config --libs libxml-2.0) $(STAGING_LIBDIR) -lamxc -lamxp -lamxd -lamxo
 
 # targets
 all: ../include_priv/version.h $(COMPONENT)

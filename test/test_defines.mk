@@ -17,5 +17,5 @@ CFLAGS += -DUNIT_TEST -Werror -Wall -Wextra -Wno-attributes\
 		  $(shell pkg-config --cflags cmocka) -pthread
 
 LDFLAGS += -fkeep-inline-functions -fkeep-static-functions \
-		   $(shell pkg-config --libs cmocka) -lamxc -lamxd -lamxo \
+		   $(shell pkg-config --libs cmocka) -lamxc -lamxp -lamxd -lamxo \
 		   $(shell pkg-config --libs libxml-2.0)

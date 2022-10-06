@@ -74,6 +74,8 @@
 #include <libgen.h>
 #include <errno.h>
 
+#include <amxp/amxp_dir.h>
+
 #include "utils.h"
 
 typedef enum _collection_type {
@@ -96,6 +98,11 @@ typedef struct _odl_tree_item {
     amxc_htable_it_t it;
     amxc_htable_t odl_files;
 } odl_tree_item_t;
+
+typedef struct _ocg_scan_data {
+    amxo_parser_t* parser;
+    collection_type_t type;
+} ocg_scan_data_t;
 
 static amxc_htable_t odl_files;
 static amxc_llist_t list_files;
@@ -188,37 +195,22 @@ exit:
     return retval;
 }
 
+static int ocg_scan_add(const char* name, void* priv) {
+    ocg_scan_data_t* data = (ocg_scan_data_t*) priv;
+    return ocg_add_implementation(data->parser, name, data->type);
+}
+
 static int ocg_scan_dir(amxo_parser_t* parser,
                         const char* path,
                         collection_type_t type) {
     int retval = -1;
-    DIR* dp;
-    struct dirent* ep;
-    amxc_string_t filename;
+    ocg_scan_data_t data = {
+        .parser = parser,
+        .type = type
+    };
 
-    type = (type == odl_include) ? odl_include : odl_scan_dir;
-    amxc_string_init(&filename, 128);
+    retval = amxp_dir_scan(path, "d_type == DT_REG || d_type == DT_DIR", false, ocg_scan_add, &data);
 
-    dp = opendir(path);
-    if(dp == NULL) {
-        goto exit;
-    }
-
-    for(ep = readdir(dp); ep; ep = readdir(dp)) {
-        if((strcmp(ep->d_name, ".") == 0) || (strcmp(ep->d_name, "..") == 0)) {
-            continue;
-        }
-
-        amxc_string_reset(&filename);
-        amxc_string_setf(&filename, "%s/%s", path, ep->d_name);
-        ocg_add_implementation(parser, amxc_string_get(&filename, 0), type);
-    }
-
-    closedir(dp);
-    retval = 0;
-
-exit:
-    amxc_string_clean(&filename);
     return retval;
 }
 
