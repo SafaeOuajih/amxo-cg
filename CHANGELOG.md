@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.6 - 2022-10-07(11:42:11 +0000)
+
+### Changes
+
+- Use amxp functions for scanning directories
+
 ## Release v1.2.5 - 2022-05-23(14:21:07 +0000)
 
 ### Other

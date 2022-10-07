@@ -1,3 +1,9 @@
+amxo-cg (1.2.6) unstable; urgency=medium
+
+  * Use amxp functions for scanning directories
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Fri, 07 Oct 2022 11:42:11 +0000
+
 amxo-cg (1.2.5) unstable; urgency=medium
 
   * [Gitlab CI][Unit tests][valgrind] Pipeline doesn't stop when...
