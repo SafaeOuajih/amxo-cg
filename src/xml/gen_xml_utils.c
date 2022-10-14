@@ -67,8 +67,14 @@ const char* gen_xml_odl_type(uint32_t type) {
         "datetime", "csv_string", "ssv_string"
     };
 
-    if(type >= AMXC_VAR_ID_ANY) {
-        return "unknown";
+    if(type == AMXC_VAR_ID_ANY) {
+        return "variant";
+    } else if(type > AMXC_VAR_ID_ANY) {
+        amxc_var_type_t* var_type = amxc_var_get_type(type);
+        if(var_type == NULL) {
+            return "unknown";
+        }
+        return amxc_var_get_type_name_from_id(type);
     }
 
     return type_names[type];
