@@ -1,3 +1,9 @@
+amxo-cg (1.2.7) unstable; urgency=medium
+
+  * Issue: ambiorix/applications/amxo-cg#21 Variant return type is not properly converted to doc
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Thu, 20 Oct 2022 15:38:38 +0000
+
 amxo-cg (1.2.6) unstable; urgency=medium
 
   * Use amxp functions for scanning directories

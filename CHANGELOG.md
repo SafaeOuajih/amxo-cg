@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.7 - 2022-10-20(15:38:38 +0000)
+
+### Other
+
+- Issue: ambiorix/applications/amxo-cg#21 Variant return type is not properly converted to doc
+
 ## Release v1.2.6 - 2022-10-07(11:42:11 +0000)
 
 ### Changes
