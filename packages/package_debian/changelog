@@ -1,3 +1,9 @@
+amxo-cg (1.2.8) unstable; urgency=medium
+
+  * Ignore deprecated declarations
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Mon, 14 Nov 2022 10:49:07 +0000
+
 amxo-cg (1.2.7) unstable; urgency=medium
 
   * Issue: ambiorix/applications/amxo-cg#21 Variant return type is not properly converted to doc
