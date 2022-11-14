@@ -27,6 +27,7 @@ CFLAGS += -Werror -Wall -Wextra \
           -Wformat=2 -Wshadow \
           -Wwrite-strings -Wredundant-decls \
 		  -Wno-format-nonliteral  -Wno-format-nonliteral \
+		  -Wno-error=deprecated-declarations \
           -g3 -Wmissing-declarations $(addprefix -I ,$(INCDIRS)) \
 		  -pthread \
 		  $(shell pkg-config --cflags libxml-2.0)
