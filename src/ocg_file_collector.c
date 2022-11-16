@@ -262,8 +262,12 @@ static int ocg_parse_files(amxo_parser_t* parser,
             amxd_dm_clean(dm);
             amxd_dm_init(dm);
         }
-        ocg_reset_parser(parser, base_config, file);
-        ocg_message(&parser->config, "Parsing file [%s]", file);
+        if(type != odl_include) {
+            ocg_message(&parser->config, "Parsing file [%s]", file);
+            ocg_reset_parser(parser, base_config, file);
+        } else {
+            ocg_message(&parser->config, "Including file [%s]", file);
+        }
         rv += amxo_parser_parse_file(parser, file, amxd_dm_get_root(dm));
         if(rv != 0) {
             ocg_error(&parser->config, "Error parsing [%s]", file);
@@ -500,7 +504,11 @@ void ocg_dump_files_list(amxc_var_t* config) {
     ocg_message(config, "Files that will be parsed are:");
     amxc_llist_for_each(it, &list_files) {
         odl_file_t* odl_file = amxc_container_of(it, odl_file_t, lit);
-        fprintf(stderr, "       %s\n", odl_file->file);
+        if(odl_file->type != odl_include) {
+            fprintf(stderr, "       %s\n", odl_file->file);
+        } else {
+            fprintf(stderr, "       %s (included)\n", odl_file->file);
+        }
     }
 }
 

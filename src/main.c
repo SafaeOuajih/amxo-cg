@@ -109,6 +109,11 @@ int main(int argc, char* argv[]) {
         goto exit;
     }
 
+    if(GET_BOOL(&config, "reset") && (GET_ARG(&config, "include-odls") != NULL)) {
+        ocg_error(&config, "Options -r and -i are mutually exclusive\n");
+        goto exit;
+    }
+
     if(index >= argc) {
         ocg_error(&config, "Missing input files or directories\n");
         ocg_usage(argc, argv);
