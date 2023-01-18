@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.10 - 2023-01-18(09:32:04 +0000)
+
+### Fixes
+
+- [doc generation][NumberOfEntries field is not correctly put under the correct Object
+
 ## Release v1.2.9 - 2022-11-16(12:22:33 +0000)
 
 ### Fixes
