@@ -164,7 +164,6 @@ static void gen_xml_close(amxo_parser_t* parser) {
 
     xmlFreeDoc(xml_ctx.doc);
     xmlCleanupParser();
-    xmlCleanupGlobals();
     xml_ctx.doc = NULL;
     xml_ctx.xml_root = NULL;
     xml_ctx.xml_dm_root = NULL;
