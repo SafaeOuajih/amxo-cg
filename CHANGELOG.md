@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.11 - 2023-02-28(10:29:54 +0000)
+
+### Changes
+
+- [PRPL] amxo-cg does not compile with libxml2 version 2.10.2
+
 ## Release v1.2.10 - 2023-01-18(09:32:04 +0000)
 
 ### Fixes
