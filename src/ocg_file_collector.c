@@ -376,8 +376,6 @@ void ocg_build_include_tree(amxc_var_t* config) {
     amxc_array_t* files = amxc_htable_get_sorted_keys(&odl_files);
     size_t nr_of_files = amxc_array_size(files);
 
-    amxo_parser_init(&parser);
-    amxo_parser_set_hooks(&parser, &ocg_hooks);
     silent = GET_ARG(config, "silent");
     if(silent == NULL) {
         silent = amxc_var_add_key(bool, config, "silent", true);
@@ -389,6 +387,9 @@ void ocg_build_include_tree(amxc_var_t* config) {
         const char* file_name = (const char*) amxc_array_get_data_at(files, i);
         amxc_htable_it_t* it = amxc_htable_get(&odl_files, file_name);
         odl_file_t* odl_file = amxc_container_of(it, odl_file_t, it);
+
+        amxo_parser_init(&parser);
+        amxo_parser_set_hooks(&parser, &ocg_hooks);
 
         if(odl_file->use_count == 0) {
             amxc_var_t* var = NULL;
@@ -403,9 +404,10 @@ void ocg_build_include_tree(amxc_var_t* config) {
 
             amxd_dm_clean(&dm);
         }
+
+        amxo_parser_clean(&parser);
     }
 
-    amxo_parser_clean(&parser);
 
     amxc_array_delete(&files, NULL);
     ocg_clean_tree_root();
