@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.12 - 2023-02-28(12:30:14 +0000)
+
+### Fixes
+
+- amxo-cg fails to build correct include tree when parsing error occurs
+
 ## Release v1.2.11 - 2023-02-28(10:29:54 +0000)
 
 ### Changes
