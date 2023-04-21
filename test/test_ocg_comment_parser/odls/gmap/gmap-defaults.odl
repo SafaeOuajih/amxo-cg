@@ -6,7 +6,7 @@
     gmap_defaults_path = "${install_data_path}/gmap/config";
 }
 
-datamodel {
+%populate {
     object Devices {
     }
 }

@@ -1,19 +1,19 @@
 %define {
     select NetDev {
-        read-only object Link[] {
-            read-only int32 Index;
-            read-only string Type; // ether atm void none ppp tunnel tunnel6 loopback ...
+        %read-only object Link[] {
+            %read-only int32 Index;
+            %read-only string Type; // ether atm void none ppp tunnel tunnel6 loopback ...
             string Flags; // loopback broadcast pointopoint multicast noarp allmulti promisc master slave debug dynamic automedia portsel notrailers up
             string Name;
             string LLAddress;
             uint32 TxQueueLen;
             uint32 MTU;
-            read-only string State="unknown"; // unknown notpresent down lowerlayerdown testing dormant up
+            %read-only string State="unknown"; // unknown notpresent down lowerlayerdown testing dormant up
             
             // procfs parameters
             bool IPv4Forwarding = true;
             uint32 IPv4ForceIGMPVersion = 0 {
-                constraint range [0, 3];
+                on action validate call check_range [0, 3];
             }
             bool IPv4AcceptLocal = false;
             bool IPv4AcceptSourceRoute = true;

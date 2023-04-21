@@ -13,8 +13,8 @@
 			string NeMoFlags;
 			uint32 PreferredLifetime; // in seconds since boot, this is probably in the future ( > Uptime), or 0 if preferred forever
 			uint32 ValidLifetime;     // in seconds since boot, this is definitely in the future ( > Uptime), or 0 if valid forever
-			read-only uint32 CreatedTimestamp; // in seconds since boot, this is definitely in the past ( < Uptime)
-			read-only uint32 UpdatedTimestamp; // in seconds since boot, this is definitely in the past ( < Uptime)
+			%read-only uint32 CreatedTimestamp; // in seconds since boot, this is definitely in the past ( < Uptime)
+			%read-only uint32 UpdatedTimestamp; // in seconds since boot, this is definitely in the past ( < Uptime)
 		}
     }
 }

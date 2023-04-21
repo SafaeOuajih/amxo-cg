@@ -2,7 +2,7 @@
     select NetDev {
         object GRE[] {
             string Type {
-                constraint enum ["gre", "gretap", "ip6gre", "ip6gretap"];
+                on action validate call check_enum ["gre", "gretap", "ip6gre", "ip6gretap"];
                 default "gretap";
             }
             int32 Link;
