@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## Release v1.2.13 - 2023-04-21(21:13:21 +0000)
+
+### Fixes
+
+- Fixes unit tests, removed deprecated syntax in tests
+
 ## Release v1.2.12 - 2023-02-28(12:30:14 +0000)
 
 ### Fixes

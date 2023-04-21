@@ -1,3 +1,9 @@
+amxo-cg (1.2.13) unstable; urgency=medium
+
+  * Fixes unit tests, removed deprecated syntax in tests
+
+ -- Peter DEHERDT <peter.deherdt@softathome.com>  Fri, 21 Apr 2023 21:13:22 +0000
+
 amxo-cg (1.2.12) unstable; urgency=medium
 
   * amxo-cg fails to build correct include tree when parsing error occurs
