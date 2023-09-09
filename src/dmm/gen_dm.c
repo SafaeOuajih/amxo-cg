@@ -122,6 +122,16 @@ static const char* get_arg =
 
 static amxc_string_t end_func;
 
+static void strip_odl(char* filename) {
+    char* dot;
+    if(filename) {
+        dot = strrchr(filename, '.');
+        if (dot != NULL && !strcmp(dot, ".odl")) {
+            *dot = '\0';
+        }
+    }
+}
+
 static void ocg_dm_methods_start(amxo_parser_t* parser) {
     amxc_var_t* gens = amxo_parser_get_config(parser, "generators");
     amxc_var_t* var_dir_name = amxc_var_get_key(gens,
@@ -136,6 +146,7 @@ static void ocg_dm_methods_start(amxo_parser_t* parser) {
     // TODO: Better file name (strip odl extension - add xml extension)
     // If no file name from parser - generate file name ?
     // Parser can parse odl strings - then no file name is available
+    strip_odl(filename);
     if((dir_name == NULL) || (*dir_name == 0)) {
         amxc_string_setf(&file, "./%s.c", bn);
     } else {
