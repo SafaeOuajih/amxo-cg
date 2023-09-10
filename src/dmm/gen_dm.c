@@ -111,6 +111,12 @@ static const char* void_func_start =
     "    amxd_status_t status = amxd_status_ok;\n"
     "    \n";
 
+static const char* event_start =
+    "void _%s(const char* const sig_name,\n"
+    "         const amxc_var_t* const data,\n"
+    "         void* const priv) {\n"
+    "    \n";
+
 static const char* get_strict_arg =
     "    const %s %s = amxc_var_constcast(%s, GET_ARG(args, \"%s\"));\n";
 
@@ -174,6 +180,12 @@ static void ocg_dm_methods_stop(UNUSED amxo_parser_t* parser) {
     if(output != NULL) {
         fclose(output);
     }
+}
+
+static void ocg_dm_methods_add_event(const char* name) {
+    fprintf(output, event_start, name);
+    fprintf(output, "    /* < ADD IMPLEMENTATION HERE > */\n\n");
+    fprintf(output, "}\n\n");
 }
 
 static void ocg_dm_methods_add_func(UNUSED amxo_parser_t* parser,
@@ -333,7 +345,8 @@ static amxo_hooks_t fgen_hooks = {
     .add_func_arg = ocg_dm_methods_func_arg,
     .end_func = ocg_dm_methods_end_func,
     .add_mib = NULL,
-    .set_counter = NULL
+    .set_counter = NULL,
+    .add_event = ocg_dm_methods_add_event
 };
 
 void ocg_gen_dm_methods(amxo_parser_t* parser, bool enable) {
