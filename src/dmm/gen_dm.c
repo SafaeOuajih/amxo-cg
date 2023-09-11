@@ -73,6 +73,7 @@
 #include "version.h"
 
 static FILE* output = NULL;
+static FILE* output_param = NULL;
 
 static const char* file_header =
     ""
@@ -117,6 +118,13 @@ static const char* event_start =
     "         void* const priv) {\n"
     "    \n";
 
+static const char* param_impl_get =
+    "    const amxc_var_t* param = NULL;\n"
+    "    param = amxd_object_get_param_value(object, \"%s\");\n"
+    "    %s ret = amxd_object_get_value(%s, object, \"%s\", NULL);\n"
+    "    return ret;\n"
+    "    \n";
+
 static const char* get_strict_arg =
     "    const %s %s = amxc_var_constcast(%s, GET_ARG(args, \"%s\"));\n";
 
@@ -146,8 +154,9 @@ static void ocg_dm_methods_start(amxo_parser_t* parser) {
     const char* dir_name = amxc_var_constcast(cstring_t, var_dir_name);
     char* filename = parser->file == NULL ? strdup("out") : strdup(parser->file);
     char* bn = basename(filename);
-    amxc_string_t file;
+    amxc_string_t file, file_param;
     amxc_string_init(&file, 0);
+    amxc_string_init(&file_param, 0);
 
     // TODO: Better file name (strip odl extension - add xml extension)
     // If no file name from parser - generate file name ?
@@ -155,12 +164,16 @@ static void ocg_dm_methods_start(amxo_parser_t* parser) {
     strip_odl(filename);
     if((dir_name == NULL) || (*dir_name == 0)) {
         amxc_string_setf(&file, "./%s.c", bn);
+        amxc_string_setf(&file_param, "./%s_param.c", bn);
     } else {
         amxc_string_setf(&file, "%s/%s.c", dir_name, bn);
+        amxc_string_setf(&file_param, "%s/%s_param.c", dir_name, bn);
     }
 
     ocg_message(&parser->config, "Creating file [%s]", amxc_string_get(&file, 0));
     output = fopen(amxc_string_get(&file, 0), "w+");
+    ocg_message(&parser->config, "Creating file [%s]", amxc_string_get(&file_param, 0));
+    output_param = fopen(amxc_string_get(&file_param, 0), "w+");
     if(output == NULL) {
         ocg_error(&parser->config, "Error: Failed to create [%s]", amxc_string_get(&file, 0));
     } else {
@@ -172,13 +185,27 @@ static void ocg_dm_methods_start(amxo_parser_t* parser) {
         fprintf(output, "%s\n\n", file_header);
     }
 
+    if(output_param == NULL) {
+        ocg_error(&parser->config, "Error: Failed to create [%s]", amxc_string_get(&file_param, 0));
+    } else {
+        fprintf(output_param,
+                "/* AUTO GENERATED WITH amx_odl_version %d.%d.%d */\n\n",
+                VERSION_MAJOR,
+                VERSION_MINOR,
+                VERSION_BUILD);
+        fprintf(output_param, "%s\n\n", file_header);
+    }
     free(filename);
+    amxc_string_clean(&file_param);
     amxc_string_clean(&file);
 }
 
 static void ocg_dm_methods_stop(UNUSED amxo_parser_t* parser) {
     if(output != NULL) {
         fclose(output);
+    }
+    if(output_param != NULL) {
+        fclose(output_param);
     }
 }
 
@@ -324,6 +351,70 @@ static void ocg_dm_methods_func_arg(UNUSED amxo_parser_t* parser,
     }
 }
 
+static void get_type(uint32_t type, char** type_str)
+{
+    if(*type_str){
+        return;
+    }
+    switch(type) {
+    case AMXC_VAR_ID_CSTRING:
+        *type_str = strdup("cstring_t");
+        break;
+    case AMXC_VAR_ID_INT8:
+        *type_str = strdup("int8_t");
+	break;
+    case AMXC_VAR_ID_INT16:
+        *type_str = strdup("int16_t");
+        break;
+    case AMXC_VAR_ID_INT32:
+        *type_str = strdup("int32_t");
+        break;
+    case AMXC_VAR_ID_INT64:
+        *type_str = strdup("int64_t");
+	break;
+    case AMXC_VAR_ID_UINT8:
+        *type_str = strdup("uint8_t");
+	break;
+    case AMXC_VAR_ID_UINT16:
+        *type_str = strdup("uint16_t");
+        break;
+    case AMXC_VAR_ID_UINT32:
+        *type_str = strdup("uint32_t");
+        break;
+    case AMXC_VAR_ID_UINT64:
+        *type_str = strdup("uint64_t");
+        break;
+    case AMXC_VAR_ID_BOOL:
+        *type_str = strdup("bool");
+        break;
+    case AMXC_VAR_ID_FLOAT:
+        *type_str = strdup("float");
+        break;
+    case AMXC_VAR_ID_DOUBLE:
+        *type_str = strdup("double");
+        break;
+    default:
+        *type_str = strdup("void");
+        break;
+    }
+}
+
+static void ocg_dm_param_set_get(UNUSED amxo_parser_t* parser,
+                                 amxd_object_t* object,
+                                 const char* name,
+                                 UNUSED int64_t attr_bitmask,
+                                 uint32_t type) {
+    const char* obj_name = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
+    printf("%s\n", obj_name);
+    char* type_str = NULL;
+    fprintf(output_param, event_start, name);
+    get_type(type, &type_str);
+    fprintf(output_param, param_impl_get, name, type_str, type_str, name);
+    fprintf(output_param, "    /* < ADD IMPLEMENTATION HERE > */\n\n");
+    fprintf(output_param, "}\n\n");
+    free(type_str);
+}
+
 static amxo_hooks_t fgen_hooks = {
     .it = { .next = NULL, .prev = NULL, .llist = NULL },
     .comment = NULL,
@@ -338,7 +429,7 @@ static amxo_hooks_t fgen_hooks = {
     .add_instance = NULL,
     .select_object = NULL,
     .end_object = NULL,
-    .add_param = NULL,
+    .add_param = ocg_dm_param_set_get,
     .set_param = NULL,
     .end_param = NULL,
     .add_func = ocg_dm_methods_add_func,
