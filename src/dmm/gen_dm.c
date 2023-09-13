@@ -67,6 +67,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include "utils.h"
 #include "colors.h"
@@ -74,6 +75,9 @@
 
 static FILE* output = NULL;
 static FILE* output_param = NULL;
+static FILE* output_header = NULL;
+
+static char* header_file_bn = NULL;
 
 static const char* file_header =
     ""
@@ -118,6 +122,23 @@ static const char* event_start =
     "         void* const priv) {\n"
     "    \n";
 
+static const char* header_file_start =
+    "#if !defined(__DM_%s_H__)\n"
+    "#define __DM_%s_H__\n"
+    "\n"
+    "#ifdef __cplusplus\n"
+    "extern \"C\"\n"
+    "{\n"
+    "#endif\n"
+    "\n";
+
+static const char* header_file_end =
+    "#ifdef __cplusplus\n"
+    "}\n"
+    "#endif\n"
+    "\n"
+    "#endif // __DM_%s_H__\n";
+
 static const char* param_impl_get =
     "    const amxc_var_t* param = NULL;\n"
     "    param = amxd_object_get_param_value(object, \"%s\");\n"
@@ -146,6 +167,23 @@ static void strip_odl(char* filename) {
     }
 }
 
+static void get_prototype(const char* input, char** prototype) {
+    char* bracket;
+    if(input) {
+        *prototype = strdup(input);
+        bracket = strrchr(*prototype, '{');
+	*(bracket-1) = '\0';
+	strcat(*prototype, ";\n\n");
+    }
+}
+
+static void convert_2_uppercase(char *str) {
+    while (*str) {
+        *str = toupper(*str);
+        str++;
+    }
+}
+
 static void ocg_dm_methods_start(amxo_parser_t* parser) {
     amxc_var_t* gens = amxo_parser_get_config(parser, "generators");
     amxc_var_t* var_dir_name = amxc_var_get_key(gens,
@@ -154,26 +192,33 @@ static void ocg_dm_methods_start(amxo_parser_t* parser) {
     const char* dir_name = amxc_var_constcast(cstring_t, var_dir_name);
     char* filename = parser->file == NULL ? strdup("out") : strdup(parser->file);
     char* bn = basename(filename);
-    amxc_string_t file, file_param;
+    amxc_string_t file, file_param, header_file;
     amxc_string_init(&file, 0);
     amxc_string_init(&file_param, 0);
+    amxc_string_init(&header_file, 0);
 
     // TODO: Better file name (strip odl extension - add xml extension)
     // If no file name from parser - generate file name ?
     // Parser can parse odl strings - then no file name is available
     strip_odl(filename);
+    header_file_bn = strdup(bn);
+    convert_2_uppercase(header_file_bn);
     if((dir_name == NULL) || (*dir_name == 0)) {
         amxc_string_setf(&file, "./%s.c", bn);
         amxc_string_setf(&file_param, "./%s_param.c", bn);
+        amxc_string_setf(&header_file, "./dm_%s.h", bn);
     } else {
         amxc_string_setf(&file, "%s/%s.c", dir_name, bn);
         amxc_string_setf(&file_param, "%s/%s_param.c", dir_name, bn);
+        amxc_string_setf(&header_file, "%s/dm_%s.h", dir_name, bn);
     }
 
     ocg_message(&parser->config, "Creating file [%s]", amxc_string_get(&file, 0));
     output = fopen(amxc_string_get(&file, 0), "w+");
     ocg_message(&parser->config, "Creating file [%s]", amxc_string_get(&file_param, 0));
     output_param = fopen(amxc_string_get(&file_param, 0), "w+");
+    ocg_message(&parser->config, "Creating file [%s]", amxc_string_get(&header_file, 0));
+    output_header = fopen(amxc_string_get(&header_file, 0), "w+");
     if(output == NULL) {
         ocg_error(&parser->config, "Error: Failed to create [%s]", amxc_string_get(&file, 0));
     } else {
@@ -195,7 +240,20 @@ static void ocg_dm_methods_start(amxo_parser_t* parser) {
                 VERSION_BUILD);
         fprintf(output_param, "%s\n\n", file_header);
     }
+
+    if(output_header == NULL) {
+        ocg_error(&parser->config, "Error: Failed to create [%s]", amxc_string_get(&header_file, 0));
+    } else {
+        fprintf(output_header,
+                "/* AUTO GENERATED WITH amx_odl_version %d.%d.%d */\n\n",
+                VERSION_MAJOR,
+                VERSION_MINOR,
+                VERSION_BUILD);
+        fprintf(output_header, header_file_start, header_file_bn, header_file_bn);
+    }
+
     free(filename);
+    amxc_string_clean(&header_file);
     amxc_string_clean(&file_param);
     amxc_string_clean(&file);
 }
@@ -207,12 +265,21 @@ static void ocg_dm_methods_stop(UNUSED amxo_parser_t* parser) {
     if(output_param != NULL) {
         fclose(output_param);
     }
+    if(output_header != NULL) {
+        fprintf(output_header, header_file_end, header_file_bn);
+	free(header_file_bn);
+        fclose(output_header);
+    }
 }
 
 static void ocg_dm_methods_add_event(const char* name) {
+    char* prototype = NULL;
+
     fprintf(output, event_start, name);
     fprintf(output, "    /* < ADD IMPLEMENTATION HERE > */\n\n");
     fprintf(output, "}\n\n");
+    get_prototype(event_start, &prototype);
+    fprintf(output_header, prototype, name);
 }
 
 static void ocg_dm_methods_add_func(UNUSED amxo_parser_t* parser,
@@ -222,6 +289,8 @@ static void ocg_dm_methods_add_func(UNUSED amxo_parser_t* parser,
                                     uint32_t type) {
     const char* obj_name = amxd_object_get_name(object, AMXD_OBJECT_NAMED);
     const char* type_name = amxc_var_get_type_name_from_id(type);
+    char* prototype = NULL;
+
     if(output == NULL) {
         return;
     }
@@ -231,12 +300,16 @@ static void ocg_dm_methods_add_func(UNUSED amxo_parser_t* parser,
     switch(type) {
     case AMXC_VAR_ID_NULL:
         fprintf(output, void_func_start, obj_name, name);
+        get_prototype(void_func_start, &prototype);
+        fprintf(output_header, prototype, obj_name, name);
         break;
     case AMXC_VAR_ID_CSTRING:
     case AMXC_VAR_ID_SSV_STRING:
     case AMXC_VAR_ID_CSV_STRING:
         type_name = "char*";
         fprintf(output, func_start, obj_name, name, type_name, "NULL");
+        get_prototype(func_start, &prototype);
+        fprintf(output_header, prototype, obj_name, name);
         break;
     case AMXC_VAR_ID_INT8:
     case AMXC_VAR_ID_INT16:
@@ -249,20 +322,31 @@ static void ocg_dm_methods_add_func(UNUSED amxo_parser_t* parser,
     case AMXC_VAR_ID_FLOAT:
     case AMXC_VAR_ID_DOUBLE:
         fprintf(output, func_start, obj_name, name, type_name, "0");
+        get_prototype(func_start, &prototype);
+        fprintf(output_header, prototype, obj_name, name);
         break;
     case AMXC_VAR_ID_BOOL:
         fprintf(output, func_start, obj_name, name, type_name, "false");
+        get_prototype(func_start, &prototype);
+        fprintf(output_header, prototype, obj_name, name);
         break;
     case AMXC_VAR_ID_FD:
         fprintf(output, func_start, obj_name, name, type_name, "-1");
+        get_prototype(func_start, &prototype);
+        fprintf(output_header, prototype, obj_name, name);
         break;
     case AMXC_VAR_ID_ANY:
         fprintf(output, func_any, obj_name, name);
+        get_prototype(func_any, &prototype);
+        fprintf(output_header, prototype, obj_name, name);
         break;
     default:
         fprintf(output, func_start, obj_name, name, type_name, "NULL");
+        get_prototype(func_start, &prototype);
+        fprintf(output_header, prototype, obj_name, name);
         break;
     }
+    free(prototype);
 }
 
 static void ocg_dm_methods_end_func(UNUSED amxo_parser_t* parser,
